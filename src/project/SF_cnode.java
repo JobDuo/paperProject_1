@@ -11,7 +11,6 @@ public class SF_cnode {
     private double normalizedX;
     private double normalizedY;
   
-
     // Primary key is the NodeID
    
     //Node ID	Normalized X Coordinate	Normalized Y Coordinate	Point of Interest

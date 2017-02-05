@@ -41,7 +41,7 @@ class Graph {
             System.out.printf("%d(unreached)", this.vertexID);
          } else {
             this.previous.printPath();
-            //System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
+            System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
             
             returnPath.add(this.vertexID);	//최단 거리 패스 저장
             
@@ -67,6 +67,13 @@ class Graph {
          graph.get(e.v1).neighbours.put(graph.get(e.v2), e.dist);
          graph.get(e.v2).neighbours.put(graph.get(e.v1), e.dist); 
       }
+   }
+   
+   /**
+    * 노드와 연결된 노드 값 들 알아오기 
+    */
+   public Map<Vertex, Double> getLinkNode(){
+	return graph.get(1000).neighbours;
    }
  
   
@@ -115,11 +122,11 @@ class Graph {
    
    public ArrayList<Integer> printQ2(int endPointID) {
       if (!graph.containsKey(endPointID)) {
-         System.err.printf("Graph doesn't contain end vertex \"%d\"\n", endPointID);
+         //System.err.printf("Graph doesn't contain end vertex \"%d\"\n", endPointID);
          //return;
       }
       graph.get(endPointID).printPath();
-      System.out.println();
+      //System.out.println();
       
       return returnPath;
    }
