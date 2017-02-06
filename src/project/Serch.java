@@ -15,7 +15,7 @@ class Serch {
 	/**
 	 * 가장 근접한 차량 k 대를 찾는다.
 	 */
-	public int[] serchShortestCar(Graph graph, SF_cnode userQ, ArrayList<SF_cnode> randCarArray, int NUM_OF_SEARCHING){
+	public int[] serchShortestCar(Graph graph, SF_cnode userQ, ArrayList<Car> CarArray, int NUM_OF_SEARCHING){
 		s_resultID = new int[NUM_OF_SEARCHING];
 		
 		
@@ -24,13 +24,12 @@ class Serch {
 		shortest_Car_Path = new ArrayList<ArrayList<Integer>>();	//k대의 근접 차량 패스를 저장
 		
 		graph.clear_List();	//클리어 함수 안해주면 패스 중복된다.
-		s_resultID = graph.printQ1(NUM_OF_SEARCHING,randCarArray);
+		s_resultID = graph.printQ1(NUM_OF_SEARCHING, CarArray);
 		
 		/**
 		 * 가장 가깝게 찾아온 차량 객체의 아이디를 통해 패스를 그림
 		 */
-		
-		
+		//System.out.println(graph.getLinkNode());
 		
 		
 		return s_resultID;

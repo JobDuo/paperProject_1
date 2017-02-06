@@ -9,9 +9,9 @@ class Graph {
    public static class mapLine {
       public final int v1, v2;
       public final double dist;
-      public mapLine(int v1, int v2, double dist) {
-         this.v1 = v1;
-         this.v2 = v2;
+      public mapLine(int v1, int v2, double dist) {	
+         this.v1 = v1;		//v1 = 스타트노드
+         this.v2 = v2;		//v2 = 엔드노드
          this.dist = dist;
       }
    }
@@ -23,12 +23,14 @@ class Graph {
    static ArrayList<Integer> returnPath = new ArrayList<Integer>();
    
    public static class Vertex implements Comparable<Vertex> {
-      public final int vertexID;
+      public int vertexID;
       
       public double dist = Double.MAX_VALUE; 
       public Vertex previous = null;
       public final Map<Vertex, Double> neighbours = new HashMap<>();
- 
+      public final Map<Vertex, Integer> neighbours1 = new HashMap<>();
+      
+      
       public Vertex(int vertexID) {
          this.vertexID = vertexID;
          
@@ -41,7 +43,7 @@ class Graph {
             System.out.printf("%d(unreached)", this.vertexID);
          } else {
             this.previous.printPath();
-            System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
+            //System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
             
             returnPath.add(this.vertexID);	//최단 거리 패스 저장
             
@@ -64,16 +66,61 @@ class Graph {
  
      
       for (mapLine e : edges) {
+    	  /**
+    	   * v1 시작 노드와 v2 끝 노드의 dist 를 연결하는 그래프 생성
+    	   */
          graph.get(e.v1).neighbours.put(graph.get(e.v2), e.dist);
          graph.get(e.v2).neighbours.put(graph.get(e.v1), e.dist); 
+
+         
+         /**
+          * 차량에서 주변 노드를 검색하기위함
+          */
+         graph.get(e.v2).neighbours1.put(graph.get(e.v1), e.v1); 
+         graph.get(e.v1).neighbours1.put(graph.get(e.v2), e.v2);
+         
+         
       }
    }
    
    /**
     * 노드와 연결된 노드 값 들 알아오기 
     */
-   public Map<Vertex, Double> getLinkNode(){
-	return graph.get(1000).neighbours;
+   ArrayList<Integer> neighborNodeId = new ArrayList<Integer>();
+   String nodeParseT1;
+   String nodeParseT2;
+   String[] str;
+   String[] str2;
+   String[] str3;
+   
+   public ArrayList<Integer> getLinkNode(int nodiId){
+	
+	nodeParseT1 = graph.get(nodiId).neighbours1.toString();	//길이	
+	//{project.Graph$Vertex@19982de=3327, project.Graph$Vertex@f2bd5b=949, project.Graph$Vertex@1846619=301} 형식을 파싱해야함
+	/**
+	 * 노드위치만 가져오기 위한 파싱 부분
+	 */
+	str = nodeParseT1.split(",");
+	for(int i=0; i<str.length; i++){
+		str2 = str[i].split("=");
+		for(int j=1; j<str2.length; j++){
+			if(j == str2.length-1){
+				str3 = str2[j].split("}");
+				str2[j] = str3[0];
+			}
+			//System.out.println(str2[j]);
+			neighborNodeId.add(Integer.parseInt(str2[j]));
+		}
+	}
+	
+	return neighborNodeId;
+	//return graph.get(nodiId).vertexID;	//노드 아이디
+   }
+   /**
+    * 차량 주변의 노드가 몇개인지 반환
+    */
+   public int getNeighborNodeCount(){
+	   return neighborNodeId.size();
    }
  
   
@@ -137,7 +184,7 @@ class Graph {
     * @param taxiArray
     * @return
     */
-   public int[] printQ1(int k, ArrayList<SF_cnode> taxiArray) {
+   public int[] printQ1(int k, ArrayList<Car> taxiArray) {
 	   int count =0;
 	   int nearestTaxiID[]= new int[k];
 	   int index = 0;
@@ -145,7 +192,7 @@ class Graph {
 	   Vertex[] taxi_Array = new Vertex[taxiArray.size()];
 	   
 	   for(Vertex temp : graph.values()) {
-		   for( SF_cnode node : taxiArray)
+		   for( Car node : taxiArray)
 		   {
 			   if(temp.vertexID == node.getNodeID())
 				   taxi_Array[index++] = temp;

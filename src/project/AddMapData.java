@@ -11,6 +11,10 @@ class AddMapData {
 	ArrayList<String[]> nodes;  //로드
 	LoadFile loadFile = new LoadFile();//파일 로드
 
+	
+	Car car;
+	ArrayList<Car> carArray = new ArrayList<Car>();			//실제 자동차 객체
+	
 	Random random = new Random();
 
 	private static File cedgeFile = new File("./s_edge.txt");
@@ -67,17 +71,22 @@ class AddMapData {
 	 * 차량 추가
 	 * @return 
 	 */
-	public ArrayList<SF_cnode> addCar(int count){
-		
+	public ArrayList<Car> addCar(int count){
+		randCarArray.clear();
 		//임의 차량 추가
 		for(int i=0; i<count; i++){
 			temp = random.nextInt(nodeArray.size());	//랜덤 차량 생성
+			
 			randCarArray.add(nodeArray.get(temp));		//차량의 노드 위치
+			
+			car = new Car();
+			car.setNodeID(randCarArray.get(i).getNodeID());
+			car.setPoint_x(randCarArray.get(i).getNormalizedX());
+			car.setPoint_y(randCarArray.get(i).getNormalizedY());
+			carArray.add(car);
+			
 		}
-		
-		
-		
-		return randCarArray;
+		return carArray;
 	}
 	
 	
@@ -86,6 +95,9 @@ class AddMapData {
 	
 	
 	
+	/**
+	 * 그래프 생성
+	 */
 	
 	/**
 	 * 그래프 생성 함수

@@ -29,7 +29,8 @@ class MainView extends JFrame{
 	
 	int s_resultID[] = new int[NUM_OF_SEARCHING];
 	int temp;
-	int[] Car_Path_Stop_Point;
+	int[] Car_Path_Stop_Point;	//
+	ArrayList<Integer> neighbor_Car_Path_Stop_Point = new ArrayList<Integer>();
 
 	int mapPoint_x = 0;		//스크롤바 화면 조정
 	int mapPoint_y = 0;
@@ -40,7 +41,8 @@ class MainView extends JFrame{
 	
 	private static int RATIO = 5;  // 지도비율에 쓸 변수
 	private static final int NUM_OF_SEARCHING = 5; // 찾을 수
-		
+	private static int CARCOUNT = 100;	
+	
 	private Graph.mapLine[] GRAPH = new Graph.mapLine[23874];
 	Graph graph;
 	
@@ -50,15 +52,21 @@ class MainView extends JFrame{
 	SF_cnode userQ;
 	Serch serch = new Serch();
 	Random random = new Random();
-	Car car;
+	Car car = new Car();
 	
-	ArrayList<SF_cnode> randCarArray = new ArrayList<SF_cnode>();
+	
+	ArrayList<Car> carArray = new ArrayList<Car>();		//실제 자동차 객체
+	
+	
 	ArrayList<ArrayList<Integer>> shortest_Car_Path;	//최근접 차량 패스 저장
 
 	ArrayList<SF_cnode> nodeArray = new ArrayList<SF_cnode>();		//지도 점 정보
 	ArrayList<SF_cedge> edgeArray = new ArrayList<SF_cedge>();		//지도 선 정보
 	
+	ArrayList<Integer> carNeighborNodeIdTemp = new ArrayList<Integer>();	//자동차 근처 노드
 	
+	ArrayList<ArrayList<Integer>> carNeighborNodeId = new ArrayList<ArrayList<Integer>>();
+	ArrayList<Integer> carNodeId = new ArrayList<Integer>();
 	
 	
 	public MainView(String title) {
@@ -173,13 +181,41 @@ class MainView extends JFrame{
 		/**
 		 * 차랜덤생성 버튼
 		 */
+		
+		
+		
 		c_Car_B.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 
-				randCarArray.clear();
-				randCarArray = addMapData.addCar(100);			//차량추가
+				/**
+				 * 차량정보 삽입
+				 */
+				carArray.clear();
+				carArray = addMapData.addCar(CARCOUNT);			//차량추가
+				
+				/**
+				 * 차의 움직임은 노드를 따라 이동하기때문에 그래프가 존재하는 클래스에서 확인할수있다.
+				 * 차랴으이 움직임은 본 논문주제의 이슈가 아니다.
+				 */
+			
+				carNeighborNodeId.clear();
+				carNodeId.clear();
+				carNeighborNodeIdTemp.clear();
+				neighbor_Car_Path_Stop_Point.clear();
+				
+				
+				ArrayList<Integer> carNeighborNodeIdArray = new ArrayList<Integer>();
+				for(int i=0; i<CARCOUNT; i++){
+					
+					carNeighborNodeIdArray = graph.getLinkNode(carArray.get(i).getNodeID());
+					carNeighborNodeId.add(carNeighborNodeIdArray);	//차량이 존재하는 곳의 인접 노드호출
+					carNodeId.add(carArray.get(i).getNodeID());	//차량 노드
+					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());
+					//carArray.get(i).setNeighborNode(nodeCount);
+				}
+				
 				s_check = false;
 				
 				drawPanel.repaint();	//새로그리기
@@ -200,7 +236,7 @@ class MainView extends JFrame{
 				// TODO Auto-generated method stub
 				
 				//serchCar();
-				s_resultID = serch.serchShortestCar(graph, userQ, randCarArray, NUM_OF_SEARCHING);	//최단거리 자동차 찾기  k 대 찾기
+				s_resultID = serch.serchShortestCar(graph, userQ, carArray, NUM_OF_SEARCHING);	//최단거리 자동차 찾기  k 대 찾기
 				shortest_Car_Path = serch.serchShortestCarPath(graph, NUM_OF_SEARCHING);			//최단거리 패스 찾기
 				Car_Path_Stop_Point = serch.car_Path_Stop_Point();									//패스가 이어지는 부분 제거하기위해
 				
@@ -335,9 +371,6 @@ class DrawPanel extends JLabel {
 								(int)nodeArray.get(i).getNormalizedY()/RATIO, 
 								1, 
 								1);
-						
-						
-						
 					}
 					//********************************************************************************************************************	
 					
@@ -363,17 +396,65 @@ class DrawPanel extends JLabel {
 					/**
 					 * 자동차 그리기
 					 */
-					g.setColor(Color.RED);
-					if(!randCarArray.isEmpty())
+					
+					if(!carArray.isEmpty())
 					{
 						
-						
-						for(int i=0; i<randCarArray.size(); i++){
-							g.fillRect((int)randCarArray.get(i).getNormalizedX()/RATIO -2, (int)randCarArray.get(i).getNormalizedY()/RATIO-2, 25 / RATIO, 25 / RATIO);
+						g.setColor(Color.RED);
+						for(int i=0; i<carArray.size(); i++){
+							g.fillRect((int)carArray.get(i).getPoint_x()/RATIO -2, (int)carArray.get(i).getPoint_y()/RATIO-2, 25 / RATIO, 25 / RATIO);
 							//System.out.println(i+"랜덤찍는다");
+						}
+						
+						
+						
+						//ArrayList<ArrayList<Integer>> carNeighborNodeId = new ArrayList<ArrayList<Integer>>();
+						//ArrayList<Integer> carNodeId = new ArrayList<Integer>();
+						
+						
+						/**
+						 *  자동차 주변 노드 찍기
+						 */
+						
+						
+						g.setColor(Color.yellow);
+						for(int i=0; i<CARCOUNT; i++){
+							
+							carNeighborNodeIdTemp = carNeighborNodeId.get(i);
+							
+							for(int j=0; j<carNeighborNodeIdTemp.size(); j++){
+								g.fillRect(
+										(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO, 
+										(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO, 
+										25 / RATIO, 25 / RATIO);
+								
+								
+								//아 씨발 돌겠네 
+								/*
+								if(i>0)
+								if((neighbor_Car_Path_Stop_Point.get(i)) % i == 1)
+								g.drawLine(
+										(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO, 
+										(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO, 
+										(int)nodeArray.get(carNodeId.get(i)).getNormalizedX()/RATIO, 
+										(int)nodeArray.get(carNodeId.get(i)).getNormalizedY()/RATIO);
+								*/
+							}
 							
 							
 						}
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
 						
 						/**
 						 * 쿼리 위치 그리기
@@ -390,13 +471,13 @@ class DrawPanel extends JLabel {
 					if(s_check)
 					{
 						g.setColor(Color.GREEN);
-						for(int i=0; i<randCarArray.size(); i++)
+						for(int i=0; i<carArray.size(); i++)
 						{
 							for(int j=0; j<NUM_OF_SEARCHING;j++)
 							{
-								if(randCarArray.get(i).getNodeID() == s_resultID[j])
-									g.drawRect((int)randCarArray.get(i).getNormalizedX()/RATIO -4,
-											(int)randCarArray.get(i).getNormalizedY()/RATIO-4, 40 / RATIO, 40 / RATIO);
+								if(carArray.get(i).getNodeID() == s_resultID[j])
+									g.drawRect((int)carArray.get(i).getPoint_x()/RATIO -4,
+											(int)carArray.get(i).getPoint_y()/RATIO-4, 40 / RATIO, 40 / RATIO);
 								
 							}
 							
@@ -441,6 +522,8 @@ class DrawPanel extends JLabel {
 							
 						}
 						
+						
+					
 						
 					}
 					//********************************************************************************************************************
