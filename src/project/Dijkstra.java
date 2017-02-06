@@ -100,6 +100,7 @@ class Graph {
 	/**
 	 * 노드위치만 가져오기 위한 파싱 부분
 	 */
+	neighborNodeId.clear();
 	str = nodeParseT1.split(",");
 	for(int i=0; i<str.length; i++){
 		str2 = str[i].split("=");
@@ -113,9 +114,12 @@ class Graph {
 		}
 	}
 	
+	
 	return neighborNodeId;
 	//return graph.get(nodiId).vertexID;	//노드 아이디
    }
+   
+   
    /**
     * 차량 주변의 노드가 몇개인지 반환
     */
@@ -194,6 +198,7 @@ class Graph {
 	   index = 0;
 	   nearestCarID = new int[k];	//최단 거리 노드
 	   nearestCarDist.clear();
+	   
 	   Vertex[] v_Array = new Vertex[graph.size()];
 	   Vertex[] taxi_Array = new Vertex[taxiArray.size()];
 	   

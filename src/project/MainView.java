@@ -67,10 +67,12 @@ class MainView extends JFrame{
 	Serch serch = new Serch();
 	Random random = new Random();
 	Car car = new Car();
-
+	KnnAlgorithm knnAlgorithm = new KnnAlgorithm();
+	
 	Font font;
 	
 	ArrayList<Car> carArray = new ArrayList<Car>();		//실제 자동차 객체
+	ArrayList<Car> nearCarArray = new ArrayList<Car>();		//실제 근접한 자동차 객체
 	
 	
 	ArrayList<ArrayList<Integer>> shortest_Car_Path;	//최근접 차량 패스 저장
@@ -252,8 +254,6 @@ class MainView extends JFrame{
 		 * 차랜덤생성 버튼
 		 */
 		
-		
-		
 		c_Car_B.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -273,7 +273,7 @@ class MainView extends JFrame{
 				 * 차량정보 삽입
 				 */
 				carArray.clear();
-				carArray = addMapData.addCar(CARCOUNT);			//차량추가
+				carArray = addMapData.addRandCar(CARCOUNT);			//차량추가
 				
 				/**
 				 * 차의 움직임은 노드를 따라 이동하기때문에 그래프가 존재하는 클래스에서 확인할수있다.
@@ -286,16 +286,14 @@ class MainView extends JFrame{
 				neighbor_Car_Path_Stop_Point.clear();
 				carNeighborNodeIdArray.clear();
 				
-				
+				/* 모든 차량의 주변 찍기
 				for(int i=0; i<CARCOUNT; i++){
-					
-					carNeighborNodeIdArray = graph.getLinkNode(carArray.get(i).getNodeID());
+					//carNeighborNodeIdArray = graph.getLinkNode(carArray.get(i).getNodeID());
 					carNeighborNodeId.add(carNeighborNodeIdArray);	//차량이 존재하는 곳의 인접 노드호출
-					carNodeId.add(carArray.get(i).getNodeID());	//차량 노드
+					//carNodeId.add(carArray.get(i).getNodeID());	//차량 노드
 					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());
 					//carArray.get(i).setNeighborNode(nodeCount);
-					
-				}
+				}*/
 				
 				s_check = false;
 				
@@ -339,13 +337,35 @@ class MainView extends JFrame{
 				
 				// TODO Auto-generated method stub
 				
+				/**
+				 * knn 알고리즘 사용후 근접한 후보군에서 다익스트라 사용
+				 */
+				
+				nearCarArray.clear();
+				nearCarArray = knnAlgorithm.KnnAlgorithm(userQ, carArray, NUM_OF_SEARCHING, carArray.size());
+				System.out.println(nearCarArray.size());
 				//serchCar();
-				s_resultID = serch.serchShortestCar(graph, userQ, carArray, NUM_OF_SEARCHING);	//최단거리 자동차 찾기  k 대 찾기
+				s_resultID = serch.serchShortestCar(graph, userQ, nearCarArray, NUM_OF_SEARCHING);	//최단거리 자동차 찾기  k 대 찾기
 				shortest_Car_Path = serch.serchShortestCarPath(graph, NUM_OF_SEARCHING);			//최단거리 패스 찾기
-				shortest_Car_Dist = serch.serchShortestCarDisk(graph);							//최단거리 자동차 까지의 거리
+				shortest_Car_Dist = serch.serchShortestCarDisk(graph);								//최단거리 자동차 까지의 거리
 				Car_Path_Stop_Point = serch.car_Path_Stop_Point();									//패스가 이어지는 부분 제거하기위해
 				
+				/**
+				 * 최단 거리 차량의 주변 노드 찍기
+				 */
+				carNeighborNodeId.clear();
+				carNodeId.clear();
+				carNeighborNodeIdTemp.clear();
+				neighbor_Car_Path_Stop_Point.clear();
+				carNeighborNodeIdArray.clear();
 				
+				for(int i=0; i<NUM_OF_SEARCHING; i++){
+					//carNeighborNodeIdArray = graph.getLinkNode(nearCarArray.get(i).getNodeID());
+					carNeighborNodeId.add(carNeighborNodeIdArray);	//차량이 존재하는 곳의 인접 노드호출
+					//carNodeId.add(nearCarArray.get(i).getNodeID());	//차량 노드
+					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());
+				
+				}
 				
 				s_check = true;
 				
@@ -524,10 +544,11 @@ class DrawPanel extends JPanel {
 						/**
 						 *  자동차 주변 노드 찍기
 						 */
+						if(s_check){
 						g.setColor(Color.yellow);
 						int neighbor_Car_Path_Stop_Point_For_Start = 0;//자동차 스톱 포인트 리스트는 연결되기 떄문에 연결부분을 제거 해주는 템프 변수
 						
-						for(int i=0; i<CARCOUNT; i++){
+						for(int i=0; i<NUM_OF_SEARCHING; i++){
 							
 							carNeighborNodeIdTemp = carNeighborNodeId.get(i);
 							
@@ -557,7 +578,7 @@ class DrawPanel extends JPanel {
 							neighbor_Car_Path_Stop_Point_For_Start = neighbor_Car_Path_Stop_Point.get(i);
 							
 						}
-						
+						}
 						
 						
 						

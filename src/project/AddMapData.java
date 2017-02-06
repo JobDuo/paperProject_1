@@ -14,6 +14,8 @@ class AddMapData {
 	
 	Car car;
 	ArrayList<Car> carArray = new ArrayList<Car>();			//실제 자동차 객체
+	ArrayList<Car> nearCarArray = new ArrayList<Car>();			//실제 자동차 객체
+	
 	
 	Random random = new Random();
 
@@ -71,7 +73,7 @@ class AddMapData {
 	 * 차량 추가
 	 * @return 
 	 */
-	public ArrayList<Car> addCar(int count){
+	public ArrayList<Car> addRandCar(int count){
 		randCarArray.clear();
 		//임의 차량 추가
 		for(int i=0; i<count; i++){
@@ -88,7 +90,7 @@ class AddMapData {
 		}
 		return carArray;
 	}
-	
+
 	
 	
 	
@@ -118,6 +120,8 @@ class AddMapData {
 	        return GRAPH;
 	  }
 	//********************************************************************************************************************
+
+
 	
 	
 	
