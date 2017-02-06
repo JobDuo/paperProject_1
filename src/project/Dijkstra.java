@@ -184,10 +184,16 @@ class Graph {
     * @param taxiArray
     * @return
     */
+   int count;
+   int index = 0;
+   int nearestCarID[];
+   ArrayList<Double> nearestCarDist = new ArrayList<Double>();
+   
    public int[] printQ1(int k, ArrayList<Car> taxiArray) {
-	   int count =0;
-	   int nearestTaxiID[]= new int[k];
-	   int index = 0;
+	   count = 0;
+	   index = 0;
+	   nearestCarID = new int[k];	//최단 거리 노드
+	   nearestCarDist.clear();
 	   Vertex[] v_Array = new Vertex[graph.size()];
 	   Vertex[] taxi_Array = new Vertex[taxiArray.size()];
 	   
@@ -207,7 +213,9 @@ class Graph {
 	         {
 	        	
 	        	 System.out.println(v.vertexID+"\t"+v.dist);
-	        	 nearestTaxiID[index++] = v.vertexID;
+	        	 
+	        	 nearestCarDist.add(v.dist); 
+	        	 nearestCarID[index++] = v.vertexID;
 	        	 count++;
 	        	 
 	        	
@@ -218,8 +226,15 @@ class Graph {
 	 
 	
       
-      return nearestTaxiID;
+      return nearestCarID;
    }
+   /**
+    * 최단 거리 자동차까지의 거리 표시
+    */
+   public ArrayList<Double> get_Shortest_K_Car_Dist(){
+	   return nearestCarDist;
+   }
+   
    public void clear_List(){
 	   /**
 	    * 차량 새롭게 찾을때 클리어 함수

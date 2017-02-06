@@ -18,7 +18,6 @@ class Serch {
 	public int[] serchShortestCar(Graph graph, SF_cnode userQ, ArrayList<Car> CarArray, int NUM_OF_SEARCHING){
 		s_resultID = new int[NUM_OF_SEARCHING];
 		
-		
 		graph.dijkstra(userQ.getNodeID());
 		
 		shortest_Car_Path = new ArrayList<ArrayList<Integer>>();	//k대의 근접 차량 패스를 저장
@@ -31,14 +30,22 @@ class Serch {
 		 */
 		//System.out.println(graph.getLinkNode());
 		
-		
 		return s_resultID;
 	}
 	
 	/**
+	 * 가장 근접한 차량의 거리 표시
+	 */
+	ArrayList<Double> shortestDist = new ArrayList<Double>();
+	public ArrayList<Double> serchShortestCarDisk(Graph graph){
+		shortestDist = graph.get_Shortest_K_Car_Dist();
+		return shortestDist;
+	}
+	
+	
+	/**
 	 * 차량의 패스를 가져온다.
 	 */
-	
 	public ArrayList<ArrayList<Integer>> serchShortestCarPath(Graph graph, int NUM_OF_SEARCHING){
 
 		Car_Path_Stop_Point = new int[NUM_OF_SEARCHING];			//패스 그릴때 마지막 지점과 첫 지점 연결되는것 없애기 위해서
@@ -59,7 +66,6 @@ class Serch {
 	 * @return
 	 */
 	public int[] car_Path_Stop_Point(){
-		
 		
 		return Car_Path_Stop_Point;
 	}
