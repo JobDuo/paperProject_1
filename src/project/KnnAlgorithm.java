@@ -33,6 +33,7 @@ class KnnAlgorithm {
 		}else {
 			temp = 1;
 		}
+		
 		nodeNum = new int[k*temp];
 		thisCarArray = new Car[k*temp];
 		shortestDist = new double[k*temp];
@@ -65,7 +66,8 @@ class KnnAlgorithm {
 				
 				if(shortestDist[bigTemp] > diagonal){
 					   shortestDist[bigTemp] = diagonal;
-					   thisCarArray[bigTemp].setNodeID(carArray.get(i).getNodeID());
+					   thisCarArray[bigTemp] = carArray.get(i);
+					   //thisCarArray[bigTemp].setNodeID(carArray.get(i).getNodeID());
 				   }
 				
 			}
