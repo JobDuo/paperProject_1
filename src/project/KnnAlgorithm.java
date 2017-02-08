@@ -21,11 +21,12 @@ class KnnAlgorithm {
 	double[] shortestDist;
 	
 	//ArrayList<Car> carArray = new ArrayList<Car>();		//실제 자동차 객체
-	Car[] thisCarArray;
+	ArrayList<Car> thisCarArray = new ArrayList<Car>();
 	AddMapData addMapData = new AddMapData();
 	ArrayList<Car> nearCarArray = new ArrayList<Car>();
 	int temp = 1;
-	public ArrayList<Car> KnnAlgorithm(SF_cnode queryP, ArrayList<Car> carArray, int k, int totalCarNum){
+	int iTempCarCount;
+	public ArrayList<Car> KnnAlgorithm(SF_cnode queryP, ArrayList<Car> carArray, int k, int totalCarNum, double userQ_Max_Dist){
 		
 		//총 차량의 반 보다 찾고자 하는 차량의 수가 더 많으면 후보군을 뽑을 필요가없다.
 		if(totalCarNum/2 >= k){
@@ -33,12 +34,11 @@ class KnnAlgorithm {
 		}else {
 			temp = 1;
 		}
-		
 		nodeNum = new int[k*temp];
-		thisCarArray = new Car[k*temp];
+		//thisCarArray = new Car[k*temp];
 		shortestDist = new double[k*temp];
-		
-		
+		thisCarArray.clear();
+		iTempCarCount = 0;
 		query_x = queryP.getNormalizedX();
 		query_y = queryP.getNormalizedY();
 		
@@ -52,10 +52,17 @@ class KnnAlgorithm {
 			side = Math.pow(query_y - carElement_y, 2);
 			diagonal = base + side;
 			
-			if(i < (k*temp)){
-				thisCarArray[i] = carArray.get(i);
-				thisCarArray[i].setNodeID(carArray.get(i).getNodeID());
-				shortestDist[i] = diagonal;
+			//System.out.println("userQ_Max_Dist" + userQ_Max_Dist);
+			if(userQ_Max_Dist < Math.sqrt(diagonal)){
+				//continue;	//쿼리 위치로부터 지정된 위치보다 크면 생략
+			}
+			//System.out.println(" Math.sqrt(diagonal) : " +  Math.sqrt(diagonal));
+			
+			if(iTempCarCount < (k*temp)){
+				//thisCarArray[i] = carArray.get(i);
+				thisCarArray.add(carArray.get(i));
+				thisCarArray.get(iTempCarCount).setNodeID(carArray.get(i).getNodeID());
+				shortestDist[iTempCarCount] = diagonal;
 			}else {
 				for(int j=0; j<k*temp; j++){	//앞에서 채운 k*2 차량의 거리중 가장 긴것 선택
 					if(big < shortestDist[j]){
@@ -66,11 +73,12 @@ class KnnAlgorithm {
 				
 				if(shortestDist[bigTemp] > diagonal){
 					   shortestDist[bigTemp] = diagonal;
-					   thisCarArray[bigTemp] = carArray.get(i);
+					   thisCarArray.set(bigTemp, carArray.get(i));
 					   //thisCarArray[bigTemp].setNodeID(carArray.get(i).getNodeID());
 				   }
 				
 			}
+			iTempCarCount++;	//생략되는 차량을 제외하고 카운트 해야한다.
 		}
 		
 		
@@ -78,8 +86,8 @@ class KnnAlgorithm {
 		/**
 		 * knn 알고리즘후 근접한 차량추가
 		 */
-			for(int i=0; i<thisCarArray.length; i++){
-				nearCarArray.add(thisCarArray[i]);
+			for(int i=0; i<thisCarArray.size(); i++){
+				nearCarArray.add(thisCarArray.get(i));
 			}
 			
 		

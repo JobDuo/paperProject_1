@@ -86,21 +86,21 @@ class Graph {
    /**
     * 노드와 연결된 노드 값 들 알아오기 
     */
-   ArrayList<Integer> neighborNodeId = new ArrayList<Integer>();
+   ArrayList<Integer> neighborNodeId;
    String nodeParseT1;
    String nodeParseT2;
    String[] str;
    String[] str2;
    String[] str3;
    
-   public ArrayList<Integer> getLinkNode(int nodiId){
+   public ArrayList<Integer> getLinkNode(int nodeId){
 	
-	nodeParseT1 = graph.get(nodiId).neighbours1.toString();	//길이	
+	nodeParseT1 = graph.get(nodeId).neighbours1.toString();	//길이	
 	//{project.Graph$Vertex@19982de=3327, project.Graph$Vertex@f2bd5b=949, project.Graph$Vertex@1846619=301} 형식을 파싱해야함
 	/**
 	 * 노드위치만 가져오기 위한 파싱 부분
 	 */
-	neighborNodeId.clear();
+	neighborNodeId = new ArrayList<Integer>();
 	str = nodeParseT1.split(",");
 	for(int i=0; i<str.length; i++){
 		str2 = str[i].split("=");
@@ -113,6 +113,7 @@ class Graph {
 			neighborNodeId.add(Integer.parseInt(str2[j]));
 		}
 	}
+
 	
 	
 	return neighborNodeId;
@@ -190,13 +191,14 @@ class Graph {
     */
    int count;
    int index = 0;
-   int nearestCarID[];
+   ArrayList<Integer> nearestCarID;
    ArrayList<Double> nearestCarDist = new ArrayList<Double>();
    
-   public int[] printQ1(int k, ArrayList<Car> taxiArray) {
+   public ArrayList<Integer> printQ1(int k, ArrayList<Car> taxiArray) {
 	   count = 0;
 	   index = 0;
-	   nearestCarID = new int[k];	//최단 거리 노드
+	   //nearestCarID = new int[k];	//최단 거리 노드
+	   nearestCarID = new ArrayList<Integer>();
 	   nearestCarDist.clear();
 	   
 	   Vertex[] v_Array = new Vertex[graph.size()];
@@ -220,7 +222,7 @@ class Graph {
 	        	 System.out.println(v.vertexID+"\t"+v.dist);
 	        	 
 	        	 nearestCarDist.add(v.dist); 
-	        	 nearestCarID[index++] = v.vertexID;
+	        	 nearestCarID.add(v.vertexID);
 	        	 count++;
 	        	 
 	        	

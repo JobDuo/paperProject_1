@@ -33,7 +33,7 @@ class MainView extends JFrame{
 	
 	boolean s_check= false;
 	
-	int s_resultID[] = new int[NUM_OF_SEARCHING];
+	ArrayList<Integer> s_resultID = new ArrayList<Integer>();
 	int temp;
 	int[] Car_Path_Stop_Point;	//
 	ArrayList<Integer> neighbor_Car_Path_Stop_Point = new ArrayList<Integer>();
@@ -64,6 +64,8 @@ class MainView extends JFrame{
 	AddMapData addMapData = new AddMapData();
 	LoadFile loadFile = new LoadFile();//파일 로드
 	SF_cnode userQ;
+	double userQ_Max_Dist = 2000; //임시로 5000;
+	
 	Serch serch = new Serch();
 	Random random = new Random();
 	Car car = new Car();
@@ -342,13 +344,14 @@ class MainView extends JFrame{
 				 */
 				
 				nearCarArray.clear();
-				nearCarArray = knnAlgorithm.KnnAlgorithm(userQ, carArray, NUM_OF_SEARCHING, carArray.size());
-				System.out.println(nearCarArray.size());
+				//쿼리 위치, 자동차, 찾을 개수, 자동차 개수, 쿼리로부터 직선거리 한계점: 구역나누기
+				nearCarArray = knnAlgorithm.KnnAlgorithm(userQ, carArray, NUM_OF_SEARCHING, carArray.size(), userQ_Max_Dist/2);
+				System.out.println("리턴사이즈 : " + nearCarArray.size());
 				//serchCar();
 				s_resultID = serch.serchShortestCar(graph, userQ, nearCarArray, NUM_OF_SEARCHING);	//최단거리 자동차 찾기  k 대 찾기
-				shortest_Car_Path = serch.serchShortestCarPath(graph, NUM_OF_SEARCHING);			//최단거리 패스 찾기
-				shortest_Car_Dist = serch.serchShortestCarDisk(graph);								//최단거리 자동차 까지의 거리
-				Car_Path_Stop_Point = serch.car_Path_Stop_Point();									//패스가 이어지는 부분 제거하기위해
+				shortest_Car_Path = serch.serchShortestCarPath(graph, NUM_OF_SEARCHING);				//최단거리 패스 찾기
+				shortest_Car_Dist = serch.serchShortestCarDisk(graph);									//최단거리 자동차 까지의 거리
+				Car_Path_Stop_Point = serch.car_Path_Stop_Point();										//패스가 이어지는 부분 제거하기위해
 				
 				/**
 				 * 최단 거리 차량의 주변 노드 찍기
@@ -359,13 +362,17 @@ class MainView extends JFrame{
 				neighbor_Car_Path_Stop_Point.clear();
 				carNeighborNodeIdArray.clear();
 				
-				for(int i=0; i<NUM_OF_SEARCHING; i++){
-					//carNeighborNodeIdArray = graph.getLinkNode(nearCarArray.get(i).getNodeID());
-					carNeighborNodeId.add(carNeighborNodeIdArray);	//차량이 존재하는 곳의 인접 노드호출
-					//carNodeId.add(nearCarArray.get(i).getNodeID());	//차량 노드
-					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());
 				
-				}
+				
+				for(int i=0; i<NUM_OF_SEARCHING; i++){
+					carNeighborNodeIdArray = graph.getLinkNode(s_resultID.get(i));  //차량주변 노드
+					carNodeId.add(s_resultID.get(i));					//차량 노드
+					carNeighborNodeId.add(carNeighborNodeIdArray);					//차량이 존재하는 곳의 인접 노드호출
+					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//차령 주변노드 개수
+					System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
+				}									  
+
+			
 				
 				s_check = true;
 				
@@ -546,46 +553,39 @@ class DrawPanel extends JPanel {
 						 */
 						if(s_check){
 						g.setColor(Color.yellow);
-						int neighbor_Car_Path_Stop_Point_For_Start = 0;//자동차 스톱 포인트 리스트는 연결되기 떄문에 연결부분을 제거 해주는 템프 변수
+						//int neighbor_Car_Path_Stop_Point_For_Start = 0;//자동차 스톱 포인트 리스트는 연결되기 떄문에 연결부분을 제거 해주는 템프 변수
 						
 						for(int i=0; i<NUM_OF_SEARCHING; i++){
 							
 							carNeighborNodeIdTemp = carNeighborNodeId.get(i);
+							//System.out.println("carNeighborNodeId.get(i) = " + carNeighborNodeId.get(i));
+							
 							
 							for(int j=0; j<carNeighborNodeIdTemp.size(); j++){
 								g.fillRect(
 										(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO, 
 										(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO, 
-										25 / RATIO, 25 / RATIO);
-								
-								
-								
-								
-								
+										50 / RATIO, 50 / RATIO);
 								
 							}
 							/**
-							 * 자동차 주변 엣지 그리기
-							 */
-							for(int j=neighbor_Car_Path_Stop_Point_For_Start; j<neighbor_Car_Path_Stop_Point.get(i); j++){
+							 * 자동차 주변 엣지 그리기	
+							*/
+							//for(int j=neighbor_Car_Path_Stop_Point_For_Start; j<neighbor_Car_Path_Stop_Point.get(i); j++){
+							for(int j=0; j<neighbor_Car_Path_Stop_Point.get(i); j++){
 							g.drawLine(
 									(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO, 
 									(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO, 
-									(int)nodeArray.get(carArray.get(i).getNodeID()).getNormalizedX()/RATIO, 
-									(int)nodeArray.get(carArray.get(i).getNodeID()).getNormalizedY()/RATIO);
+									(int)nodeArray.get(carNodeId.get(i)).getNormalizedX()/RATIO, 
+									(int)nodeArray.get(carNodeId.get(i)).getNormalizedY()/RATIO);
+									
+							} 
+							//neighbor_Car_Path_Stop_Point_For_Start = neighbor_Car_Path_Stop_Point.get(i);
 							
-							}
-							neighbor_Car_Path_Stop_Point_For_Start = neighbor_Car_Path_Stop_Point.get(i);
+							
 							
 						}
 						}
-						
-						
-						
-						
-						
-						
-						
 						
 						
 						
@@ -596,6 +596,18 @@ class DrawPanel extends JPanel {
 						 */
 						g.setColor(Color.BLUE);
 						g.fillRect((int)userQ.getNormalizedX()/RATIO -2, (int)userQ.getNormalizedY()/RATIO-2, 40 / RATIO, 40 / RATIO);
+						
+						
+						/**
+						 * 쿼리 위치로부터 최단 거리 검색하는 범위
+						 */
+						//userQ_Max_Dist
+						g.drawOval(
+								(int)userQ.getNormalizedX()/RATIO - (int)(userQ_Max_Dist/RATIO/2), 
+								(int)userQ.getNormalizedY()/RATIO - (int)(userQ_Max_Dist/RATIO/2), 
+								(int)(userQ_Max_Dist/RATIO), 
+								(int)(userQ_Max_Dist/RATIO));
+						
 						
 					}
 					//********************************************************************************************************************
@@ -610,7 +622,7 @@ class DrawPanel extends JPanel {
 						{
 							for(int j=0; j<NUM_OF_SEARCHING;j++)
 							{
-								if(carArray.get(i).getNodeID() == s_resultID[j]){	//최단 거리인 자동차
+								if(carArray.get(i).getNodeID() == s_resultID.get(j)){	//최단 거리인 자동차
 									g.drawRect((int)carArray.get(i).getPoint_x()/RATIO -4,
 											(int)carArray.get(i).getPoint_y()/RATIO-4, 40 / RATIO, 40 / RATIO);
 								
@@ -681,6 +693,8 @@ class DrawPanel extends JPanel {
 						g.drawString(Integer.toString(node_Check_num) , node_Check_x, node_Check_y);
 						
 					}
+					
+					
 					
 					
 	}
