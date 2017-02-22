@@ -1,12 +1,32 @@
 package project;
 
-class Car {
+import java.io.Serializable;
+
+class Car implements Serializable{
 	
-	private int nodeID;
+	private int nodeID;			//자동차가 위치한 노드위치
 	private int[] neighborNode;
+	private int second;			//자동차 위치 송신으로 부터 흐른시간
+	private int carId;			//자동차 고유번호
 	
-	private double point_x;
+	private double point_x;		//자동차 위치
 	private double point_y;
+	private double km;			//자동차 시속
+	
+	/**
+	 * 자동차 고유번호
+	 */
+	Car(int carId){
+		this.carId = carId;
+	}
+	
+	/**
+	 * 자동차 고유번호 반환
+	 */
+	public int get_Car_Id(){
+		return carId;
+	}
+	
 	
 	/**
 	 * 차가 위치할 노드의 위치아이디
@@ -14,6 +34,18 @@ class Car {
 	public void setNodeID(int data) {
     	nodeID = data;
     }
+	
+	/**
+	 * 차량의 시속
+	 */
+	public void setKm(int km){
+		this.km = km;
+	}
+	public double getKm(){
+		return km;
+	}
+	
+	
 	
 	/**
 	 * 차량 위치

@@ -33,7 +33,7 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-		MainView myFrame = new MainView("Map");
+		new MainView("Map");
 		
 	}
 }

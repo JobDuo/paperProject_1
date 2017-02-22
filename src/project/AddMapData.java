@@ -28,9 +28,18 @@ class AddMapData {
 	int temp;
 	
 	/**
+	 * 생성자 노드와 엣지 생성
+	 */
+	public AddMapData() {
+		// TODO Auto-generated constructor stub
+		add_Node();
+		add_Edge();
+	}
+	
+	/**
 	 * 노드 추가
 	 */
-	public ArrayList<SF_cnode> addNode(){
+	public void add_Node(){
 		
 		nodes = loadFile.LoadFile(cnodeFile, 3);
 		 for (int i = 0; i < nodes.size(); i++) {
@@ -43,11 +52,17 @@ class AddMapData {
 	            nodeArray.add(theNode);
 	    
 	        }
-		 return nodeArray;
+		
 		//********************************************************************************************************************
 	}
+	/**
+	 * 노드 반환
+	 */
+	public ArrayList<SF_cnode> get_Node(){
+		 return nodeArray;
+	}
 	
-	public ArrayList<SF_cedge> addEdge(){
+	public void add_Edge(){
 		 /**
 		  * 엣지 추가
 		  */
@@ -66,6 +81,11 @@ class AddMapData {
 	            
 	        }
 		 //********************************************************************************************************************
+	}
+	/**
+	 * 엣지 반환
+	 */
+	public ArrayList<SF_cedge> get_Edge(){
 		 return edgeArray;
 	}
 	
@@ -81,7 +101,7 @@ class AddMapData {
 			
 			randCarArray.add(nodeArray.get(temp));		//차량의 노드 위치
 			
-			car = new Car();
+			car = new Car(i);
 			car.setNodeID(randCarArray.get(i).getNodeID());
 			car.setPoint_x(randCarArray.get(i).getNormalizedX());
 			car.setPoint_y(randCarArray.get(i).getNormalizedY());
@@ -92,8 +112,31 @@ class AddMapData {
 	}
 
 	
-	
-	
+	/**
+	 * 통신으로 차량추가
+	 */
+	//int transportation_Car_Count = 0;	//통신 차량 대수
+	public void set_Transportation_Car(Car car2){
+		
+		car = new Car(car2.get_Car_Id());
+		car.setNodeID(car2.getNodeID());
+		
+		//randCarArray.add(nodeArray.get(random.nextInt(nodeArray.size())));		//차량의 노드 위치 -> 차량이 자신의 노드 위치 정보도 함께 보내게 되면 아래 2줄도 변경해야함 현재는 랜덤값이기 때문에 가능
+		// 수정 필요함
+		car.setPoint_x(nodeArray.get(car.getNodeID()).getNormalizedX());	//노드 위치를 통해 위치 확인
+		car.setPoint_y(nodeArray.get(car.getNodeID()).getNormalizedY());
+		carArray.add(car);
+		
+		
+
+		System.out.println("carArray = " + carArray.size());
+		//return car;
+		//서버 백그라운드에서 본 함수를 호출해서 차량 추가한후 메인뷰에서 그려준다.
+	}
+	//통신을 통해 셋팅된 차량을 리턴한다.
+	public ArrayList<Car> get_Transportation_Car(){
+		return carArray;	
+	}
 	
 	
 	

@@ -68,7 +68,7 @@ class MainView extends JFrame{
 	
 	Serch serch = new Serch();
 	Random random = new Random();
-	Car car = new Car();
+	
 	KnnAlgorithm knnAlgorithm = new KnnAlgorithm();
 	
 	Font font;
@@ -90,16 +90,23 @@ class MainView extends JFrame{
 	ArrayList<Integer> carNeighborNodeIdArray  = new ArrayList<Integer>();	//차량 근접 노드 아이디
 	
 	
+	//서버 연동
+	ServerBackground serverBackground = new ServerBackground();
+	
+	DrawPanel drawPanel = new DrawPanel();		//그림 그리기 패널
+	
 	public MainView(String title) {
 		// TODO Auto-generated constructor stub
 		super(title);
+		
+	 
 
 		
 		//노드추가
-		nodeArray = addMapData.addNode();
+		nodeArray = addMapData.get_Node();
 		
 		//엣지추가
-		edgeArray = addMapData.addEdge();
+		edgeArray = addMapData.get_Edge();
 		 
 		/**
 		 * 그래프 생성
@@ -112,7 +119,6 @@ class MainView extends JFrame{
 		/**
 		 * 화면구성
 		 */
-		DrawPanel drawPanel = new DrawPanel();		//그림 그리기 패널
 		DrawButtonPanel drawButtonPanel = new DrawButtonPanel();
 		drawButtonPanel.setLayout(null);			//버튼위치 지정할 수 있도록
 		drawPanel.setLayout(null);
@@ -255,7 +261,6 @@ class MainView extends JFrame{
 		/**
 		 * 차랜덤생성 버튼
 		 */
-		
 		c_Car_B.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -277,9 +282,10 @@ class MainView extends JFrame{
 				carArray.clear();
 				carArray = addMapData.addRandCar(CARCOUNT);			//차량추가
 				
+				
 				/**
 				 * 차의 움직임은 노드를 따라 이동하기때문에 그래프가 존재하는 클래스에서 확인할수있다.
-				 * 차랴으이 움직임은 본 논문주제의 이슈가 아니다.
+				 * 차량의 움직임은 본 논문주제의 이슈가 아니다.
 				 */
 				
 				carNeighborNodeId.clear();
@@ -302,6 +308,16 @@ class MainView extends JFrame{
 				drawPanel.repaint();	//새로그리기
 			}
 		});
+		
+		
+		/**
+		 * 차량 추가를 자동차와 통신을 통해 추가한다.
+		 */
+		
+		
+		
+		
+		
 		//********************************************************************************************************************
 		
 		/**
@@ -366,7 +382,7 @@ class MainView extends JFrame{
 				
 				for(int i=0; i<NUM_OF_SEARCHING; i++){
 					carNeighborNodeIdArray = graph.getLinkNode(s_resultID.get(i));  //차량주변 노드
-					carNodeId.add(s_resultID.get(i));					//차량 노드
+					carNodeId.add(s_resultID.get(i));								//차량 노드
 					carNeighborNodeId.add(carNeighborNodeIdArray);					//차량이 존재하는 곳의 인접 노드호출
 					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//차령 주변노드 개수
 					System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
@@ -464,8 +480,31 @@ class MainView extends JFrame{
 			
 		});
 		
+		
+		
+		/**
+		 * 서버 연동
+		 */
+		serverBackground.setGui(this);
+		serverBackground.setting();		//서버셋팅
+		
+	}
+	
+	/**
+	 * 서버로 부터 차량 받아오기
+	 */
+	public void addTransportationCar(){
+		/**
+		 * 차량정보 삽입
+		 */
+		//carArray.clear();
+		//carArray = addMapData.get_Transportation_Car();			//차량추가
+		
+		carArray = serverBackground.get_Transportation_Car();
+		drawPanel.repaint();	//새로그리기
 	}
 
+	
 class DrawButtonPanel extends JPanel{
 	@Override
 	protected void paintComponent(Graphics g) {
@@ -482,6 +521,8 @@ class DrawPanel extends JPanel {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		
+		//System.out.println(carArray.size());
 		
 		/**
 		 * 화면 초기화
@@ -699,6 +740,14 @@ class DrawPanel extends JPanel {
 					
 	}
 
+}
+
+/**
+ * 	서버 백그라운드에서 자동차 객체를 가져온다.
+ */
+public void appendCar(Car car) {
+	// TODO Auto-generated method stub
+	
 }
 
 
