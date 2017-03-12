@@ -97,8 +97,8 @@ class AddMapData {
 		randCarArray.clear();
 		//임의 차량 추가
 		for(int i=0; i<count; i++){
-			temp = random.nextInt(nodeArray.size());	//랜덤 차량 생성
-			
+			//temp = random.nextInt(nodeArray.size());	//랜덤 차량 생성
+			temp = 14572;
 			randCarArray.add(nodeArray.get(temp));		//차량의 노드 위치
 			
 			car = new Car(i);
@@ -123,8 +123,10 @@ class AddMapData {
 		
 		//randCarArray.add(nodeArray.get(random.nextInt(nodeArray.size())));		//차량의 노드 위치 -> 차량이 자신의 노드 위치 정보도 함께 보내게 되면 아래 2줄도 변경해야함 현재는 랜덤값이기 때문에 가능
 		// 수정 필요함
+		
 		car.setPoint_x(nodeArray.get(car.getNodeID()).getNormalizedX());	//노드 위치를 통해 위치 확인
 		car.setPoint_y(nodeArray.get(car.getNodeID()).getNormalizedY());
+		
 		carArray.add(car);
 		
 		

@@ -40,6 +40,7 @@ class Car implements Serializable{
 	 */
 	public void setKm(int km){
 		this.km = km;
+		this.km = km;
 	}
 	public double getKm(){
 		return km;

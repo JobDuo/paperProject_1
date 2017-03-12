@@ -21,7 +21,7 @@ class Graph {
   *
   */
    static ArrayList<Integer> returnPath = new ArrayList<Integer>();
-   
+   static private double node_node_dist = 0;
    public static class Vertex implements Comparable<Vertex> {
       public int vertexID;
       
@@ -48,6 +48,25 @@ class Graph {
             returnPath.add(this.vertexID);	//최단 거리 패스 저장
             
          }
+      }
+      
+      /**
+       * 최단거리 저장
+       */
+  
+      private double printDist(){
+    	  if (this == this.previous) {
+              System.out.printf("%d", this.vertexID);
+           } else if (this.previous == null) {
+              System.out.printf("%d(unreached)", this.vertexID);
+           } else {
+              //System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
+              node_node_dist += this.dist;
+              this.previous.printDist();
+              //returnPath.add(this.vertexID);	//최단 거리 패스 저장
+              
+           }
+    	  return node_node_dist;
       }
  
       public int compareTo(Vertex other) {
@@ -171,7 +190,6 @@ class Graph {
     * 아이디를 받아서 패스 찾아줌
     * @param endPointID
     */
-   
    public ArrayList<Integer> printQ2(int endPointID) {
       if (!graph.containsKey(endPointID)) {
          //System.err.printf("Graph doesn't contain end vertex \"%d\"\n", endPointID);
@@ -182,6 +200,21 @@ class Graph {
       
       return returnPath;
    }
+   
+   public double printQ3(int endPointID) {
+	   	  node_node_dist=0;
+	      if (!graph.containsKey(endPointID)) {
+	         //System.err.printf("Graph doesn't contain end vertex \"%d\"\n", endPointID);
+	         //return;
+	      }
+	      node_node_dist = graph.get(endPointID).printDist();
+	      //System.out.println();
+	      
+	      return node_node_dist;
+	   }
+	   
+   
+  
 
    /**
     * 최단거리 차량 k개 찾는 함수
@@ -193,7 +226,7 @@ class Graph {
    int index = 0;
    ArrayList<Integer> nearestCarID;
    ArrayList<Double> nearestCarDist = new ArrayList<Double>();
-   
+
    public ArrayList<Integer> printQ1(int k, ArrayList<Car> taxiArray) {
 	   count = 0;
 	   index = 0;
@@ -223,29 +256,30 @@ class Graph {
 	        	 
 	        	 nearestCarDist.add(v.dist); 
 	        	 nearestCarID.add(v.vertexID);
-	        	 count++;
-	        	 
-	        	
-	        	 
+	        	 count++;     	 
 	         }
 	      }
 	   
-	 
-	
-      
       return nearestCarID;
    }
+   
+   /**
+    * 노드와 노드 사이 패스 구하기
+    */
+   
+   
    /**
     * 최단 거리 자동차까지의 거리 표시
     */
    public ArrayList<Double> get_Shortest_K_Car_Dist(){
 	   return nearestCarDist;
    }
-   
+
    public void clear_List(){
 	   /**
 	    * 차량 새롭게 찾을때 클리어 함수
 	    */
 	   returnPath.clear();
+	   
    }
 }

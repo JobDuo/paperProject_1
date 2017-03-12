@@ -33,6 +33,8 @@ class Serch {
 		
 		return s_resultID;
 	}
+
+	
 	
 	/**
 	 * 가장 근접한 차량의 거리 표시
