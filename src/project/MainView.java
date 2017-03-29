@@ -716,7 +716,11 @@ class DrawPanel extends JPanel {
 								
 								//일단 거리 50을 기준으로 계산함 추후 자동차의 속력과 통신시간을 고려해서 계산 해야함
 								
-								v_All_Car_Distance = Ad(nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), nodeArray.get(carNodeId.get(i)).getNodeID(), 130, i, st_Lanth);
+								v_All_Car_Distance = Ad(nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), nodeArray.get(carNodeId.get(i)).getNodeID(), 
+										carArray.get(i).get_Car_Dist(), 
+										carNodeId.get(i), i);
+								
+								
 								
 								tempG_node_Num = new ArrayList<Integer>();
 								tempG_except_Node = new ArrayList<Integer>();
@@ -725,7 +729,7 @@ class DrawPanel extends JPanel {
 							
 								Gd(nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), nodeArray.get(carNodeId.get(i)).getNodeID(), 
 										input_Gama_Temp
-										, i, st_Lanth);
+										);
 								
 							}	
 								
@@ -733,15 +737,20 @@ class DrawPanel extends JPanel {
 							//neighbor_Car_Path_Stop_Point_For_Start = neighbor_Car_Path_Stop_Point.get(i);
 							System.out.print(nodeArray.get(carNodeId.get(i)).getNodeID() + " 번째 차 의 총 이동 거리(Ad()) = " + v_All_Car_Distance + 
 									", 직선거리 = " + graph.printQ3(nodeArray.get(carNodeId.get(i)).getNodeID()));
-//						   
-								System.out.println(", 감마값 : " + (gama_Value-input_Gama_Temp));
+						   
+							//중복된 감마값 제거
+							if(gama_Value > v_All_Car_Distance){
+								gama_Value = v_All_Car_Distance; //
+							}
+							
+							System.out.println(", 감마값 : " + (gama_Value-input_Gama_Temp));
 						
 							
 							gama_Value = 0;
 							
 							
 						}	
-//					
+					
 						} 	
 						
 						
@@ -895,7 +904,7 @@ ArrayList<Integer> tempG_node_Num;
 ArrayList<Integer> tempG_except_Node;
 ArrayList<Integer> short_Path;
 
-public double Ad(int node_Num, int except_Node, double distance, int car_Num, double ab){ //주위 노드 알아오고 값을 더해준다. , 제외 할 노드, 남은 거리, 차량 넘버
+public double Ad(int node_Num, int except_Node, double distance ,int car_num, int car_array_num){ //주위 노드 알아오고 값을 더해준다. , 제외 할 노드, 남은 거리, 차량 넘버
 	
 	
 	
@@ -927,12 +936,21 @@ public double Ad(int node_Num, int except_Node, double distance, int car_Num, do
 
 	//꼭짓점 감마값 더하기
 	if(v_d_Temp <= 0){ //남은 거리가 <= 0 일때 다음 노드로 넘어가는 시점이다. 따라서 최상위 꼭짓점이 된다.
-		System.out.println("꼭짓점 노드 : " + node_Num);
-		//이곳 노드(node_Num)값의 직선 거리와 본체의 직선거리를 비교해서 본체의 직선거리가 더 길다면
-		//이곳 노드(node_Num)값의 직선 거리 + (이곳 노드와 본체노드 사이의 거리 - 본체.가중치) 가 본체의 직선거리 + 본체.가중치 보다 크다면 큰거에서 작은거 뺸 값을 감마값에 더함
-		//graph.dijkstra(node_Num);
-		//graph.printQ3(node_Num);
+		//System.out.println("꼭짓점 노드 : " + node_Num);
+		//이곳 노드(node_Num)와 대상 챠량 값의 직선 거리와 본체의 직선거리를 비교해서 본체의 직선거리가 더 길다면
+		//이곳 노드(node_Num)와 대상 챠량 값의 직선 거리 + (이곳 노드와 본체노드 사이의 거리 - 본체.가중치) 가 본체의 직선거리 + 본체.가중치 보다 크다면 큰거에서 작은거 뺸 값을 감마값에 더함
+		graph.dijkstra(car_num);
+		double dgTemp = graph.printQ3(node_Num);
+		if(dgTemp > gama_Temp){
+			if(dgTemp + (dgTemp-gama_Temp-carArray.get(car_array_num).get_Car_Dist()) > gama_Temp + carArray.get(car_array_num).get_Car_Dist()){
+				gama_Value += (dgTemp + (dgTemp-gama_Temp-carArray.get(car_array_num).get_Car_Dist())) - gama_Temp + carArray.get(car_array_num).get_Car_Dist();
+			}
+		}
+		
 	}
+	
+	
+	
 	
 	
 	if(v_d_Temp > 0){
@@ -943,61 +961,19 @@ public double Ad(int node_Num, int except_Node, double distance, int car_Num, do
 		if(all_Dist >= gama_Temp){
 		
 			
-			/*
-			short_Path = shortest_Car_Path.get(car_Num); //0 현재 차량의 번호
-			for(int i=1; i<short_Path.size(); i++){
-			//node_Num   except_Node
-				gama_Value_B = true;
-				if(short_Path.get(i-1) == node_Num){	//최단 패스에 있는 값들 연속적인 값이 2개가 겹치지 않을때 감마값 더함
-					if(short_Path.get(i) == except_Node){
-						gama_Value_B = false;
-					}
-				}
-				
-				if(short_Path.get(i-1) == except_Node){	//최단 패스에 있는 값들 연속적인 값이 2개가 겹치지 않을때 감마값 더함
-					if(short_Path.get(i) == node_Num){
-						gama_Value_B = false;
-					}
-				}
-			}*/
+		
 			if(gama_Value_B){
 				//gama_Value += v_Distance_Part;
 			}
 			
 		}
-//		else { //꼭지점은 더 클수 있으나 그 안에 길이가 중복될 수 있다.
-//					//감마 temp - 이전 감마temp 가 weight 보다 크면 +weight 를 하고 아니면 감마 temp - 이전 감마temp 값을 삽입
-//			if((gama_Temp-previously_gama_temp) > carArray.get(car_Num).get_Car_Dist()){
-//				gama_Value += carArray.get(car_Num).get_Car_Dist();
-//			}else{
-//				gama_Value += Math.abs(gama_Temp-previously_gama_temp);
-//			}
-//		}
+
 		
 	}else{
 		v_All_Car_Distance += distance;
 		
 			if(all_Dist >= gama_Temp){
-						/*
-						short_Path = shortest_Car_Path.get(car_Num); //0 현재 차량의 번호
-						for(int i=1; i<short_Path.size(); i++){
-							gama_Value_B = true;
-						//node_Num   except_Node
-							if(short_Path.get(i-1) == node_Num){	//최단 패스에 있는 값들 연속적인 값이 2개가 겹치지 않을때 감마값 더함
-								if(short_Path.get(i) == except_Node){
-									gama_Value_B = false;
-									//System.out.println("short_Path.get(i-1) = " + short_Path.get(i-1) + " , short_Path.get(i) = " + short_Path.get(i));
-								}
-							}
-							
-							if(short_Path.get(i-1) == except_Node){	//최단 패스에 있는 값들 연속적인 값이 2개가 겹치지 않을때 감마값 더함
-								if(short_Path.get(i) == node_Num){
-									gama_Value_B = false;
-									//System.out.println("short_Path.get(i-1) = " + short_Path.get(i-1) + " , short_Path.get(i) = " + short_Path.get(i));
-								}
-							}
 						
-						}*/
 						
 				if(gama_Value_B){
 					//gama_Value += distance;
@@ -1068,7 +1044,7 @@ public double Ad(int node_Num, int except_Node, double distance, int car_Num, do
 			
 			if(v_d_Temp > 0){ //구한 파트 노드의 벌텍스 길이가 남은 길이보다 더 짧으면 재귀호출 계속 진행
 	
-				Ad(nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID(), node_Num, v_d_Temp,car_Num, ab);
+				Ad(nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID(), node_Num, v_d_Temp, car_num, car_array_num);
 				//순환 방지 해야한다.
 				
 			}
@@ -1085,7 +1061,7 @@ public double Ad(int node_Num, int except_Node, double distance, int car_Num, do
 
 
 //감마값 구하기
-public double Gd(int node_Num, int except_Node, double distance, int car_Num, double ab){ //주위 노드 알아오고 값을 더해준다. , 제외 할 노드, 남은 거리, 차량 넘버
+public double Gd(int node_Num, int except_Node, double distance){ //주위 노드 알아오고 값을 더해준다. , 제외 할 노드, 남은 거리, 차량 넘버
 	
 	graph.dijkstra(userQ.getNodeID());
 	
@@ -1175,7 +1151,7 @@ public double Gd(int node_Num, int except_Node, double distance, int car_Num, do
 			
 			if(v_d_Temp > 0){ //구한 파트 노드의 벌텍스 길이가 남은 길이보다 더 짧으면 재귀호출 계속 진행
 	
-				Gd(nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID(), node_Num, v_d_Temp,car_Num, ab);
+				Gd(nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID(), node_Num, v_d_Temp);
 				//순환 방지 해야한다.
 				
 			}
