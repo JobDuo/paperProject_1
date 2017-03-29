@@ -26,6 +26,7 @@ class Serch {
 		graph.clear_List();	//클리어 함수 안해주면 패스 중복된다.
 		s_resultID = graph.printQ1(NUM_OF_SEARCHING, CarArray);
 		
+		
 		/**
 		 * 가장 가깝게 찾아온 차량 객체의 아이디를 통해 패스를 그림
 		 */

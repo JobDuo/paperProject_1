@@ -38,9 +38,9 @@ class Graph {
  
       private void printPath() {
          if (this == this.previous) {
-            System.out.printf("%d", this.vertexID);
+            //System.out.printf("%d", this.vertexID);
          } else if (this.previous == null) {
-            System.out.printf("%d(unreached)", this.vertexID);
+            //System.out.printf("%d(unreached)", this.vertexID);
          } else {
             this.previous.printPath();
             //System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
@@ -55,18 +55,21 @@ class Graph {
        */
   
       private double printDist(){
+    	  
     	  if (this == this.previous) {
-              System.out.printf("%d", this.vertexID);
+    		  //return node_node_dist;
+              //System.out.printf("%d", this.vertexID);
            } else if (this.previous == null) {
-              System.out.printf("%d(unreached)", this.vertexID);
+        	   //return node_node_dist;
+              //System.out.printf("%d(unreached)", this.vertexID);
            } else {
               //System.out.println(" -> "+this.vertexID + "( " + this.dist + ")");
               node_node_dist += this.dist;
-              this.previous.printDist();
+              //this.previous.printDist();
               //returnPath.add(this.vertexID);	//최단 거리 패스 저장
               
            }
-    	  return node_node_dist;
+    	  return this.dist;	//최단거리
       }
  
       public int compareTo(Vertex other) {
@@ -150,7 +153,7 @@ class Graph {
   
    public void dijkstra(int startPointID) {
       if (!graph.containsKey(startPointID)) {
-         System.err.printf("Graph doesn't contain start vertex \"%d\"\n", startPointID);
+         //System.err.printf("Graph doesn't contain start vertex \"%d\"\n", startPointID);
          return;
       }
       final Vertex source = graph.get(startPointID);
@@ -201,11 +204,12 @@ class Graph {
       return returnPath;
    }
    
-   public double printQ3(int endPointID) {
+   public double printQ3(int endPointID) { //직선거리
+	   
 	   	  node_node_dist=0;
 	      if (!graph.containsKey(endPointID)) {
-	         //System.err.printf("Graph doesn't contain end vertex \"%d\"\n", endPointID);
-	         //return;
+	         System.err.printf("Graph doesn't contain end vertex \"%d\"\n", endPointID);
+	         //return node_node_dist;
 	      }
 	      node_node_dist = graph.get(endPointID).printDist();
 	      //System.out.println();
@@ -234,6 +238,7 @@ class Graph {
 	   nearestCarID = new ArrayList<Integer>();
 	   nearestCarDist.clear();
 	   
+	   
 	   Vertex[] v_Array = new Vertex[graph.size()];
 	   Vertex[] taxi_Array = new Vertex[taxiArray.size()];
 	   
@@ -260,8 +265,12 @@ class Graph {
 	         }
 	      }
 	   
+	   
       return nearestCarID;
    }
+   
+   
+   
    
    /**
     * 노드와 노드 사이 패스 구하기
@@ -274,6 +283,7 @@ class Graph {
    public ArrayList<Double> get_Shortest_K_Car_Dist(){
 	   return nearestCarDist;
    }
+
 
    public void clear_List(){
 	   /**

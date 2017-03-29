@@ -96,9 +96,12 @@ class AddMapData {
 	public ArrayList<Car> addRandCar(int count){
 		randCarArray.clear();
 		//임의 차량 추가
+		
+		
+		/*
 		for(int i=0; i<count; i++){
-			//temp = random.nextInt(nodeArray.size());	//랜덤 차량 생성
-			temp = 14572;
+			temp = random.nextInt(nodeArray.size());	//랜덤 차량 생성
+			//temp = 16482;
 			randCarArray.add(nodeArray.get(temp));		//차량의 노드 위치
 			
 			car = new Car(i);
@@ -108,6 +111,71 @@ class AddMapData {
 			carArray.add(car);
 			
 		}
+		*/
+		
+		randCarArray.add(nodeArray.get(5412));		//차량의 노드 위치
+		car = new Car(0);
+		car.setNodeID(randCarArray.get(0).getNodeID());
+		car.setPoint_x(randCarArray.get(0).getNormalizedX());
+		car.setPoint_y(randCarArray.get(0).getNormalizedY());
+		carArray.add(car);
+		
+		randCarArray.add(nodeArray.get(16648));		//차량의 노드 위치
+		car = new Car(1);
+		car.setNodeID(randCarArray.get(1).getNodeID());
+		car.setPoint_x(randCarArray.get(1).getNormalizedX());
+		car.setPoint_y(randCarArray.get(1).getNormalizedY());
+		carArray.add(car);
+		
+		
+		randCarArray.add(nodeArray.get(6268));		//차량의 노드 위치
+		car = new Car(2);
+		car.setNodeID(randCarArray.get(2).getNodeID());
+		car.setPoint_x(randCarArray.get(2).getNormalizedX());
+		car.setPoint_y(randCarArray.get(2).getNormalizedY());
+		carArray.add(car);
+		
+		
+
+		randCarArray.add(nodeArray.get(9259));		//차량의 노드 위치
+		car = new Car(3);
+		car.setNodeID(randCarArray.get(3).getNodeID());
+		car.setPoint_x(randCarArray.get(3).getNormalizedX());
+		car.setPoint_y(randCarArray.get(3).getNormalizedY());
+		carArray.add(car);
+		
+
+		randCarArray.add(nodeArray.get(5959));		//차량의 노드 위치
+		car = new Car(4);
+		car.setNodeID(randCarArray.get(4).getNodeID());
+		car.setPoint_x(randCarArray.get(4).getNormalizedX());
+		car.setPoint_y(randCarArray.get(4).getNormalizedY());
+		carArray.add(car);
+		
+		
+		randCarArray.add(nodeArray.get(17863));		//차량의 노드 위치
+		car = new Car(5);
+		car.setNodeID(randCarArray.get(5).getNodeID());
+		car.setPoint_x(randCarArray.get(5).getNormalizedX());
+		car.setPoint_y(randCarArray.get(5).getNormalizedY());
+		carArray.add(car);
+		
+		randCarArray.add(nodeArray.get(16020));		//차량의 노드 위치
+		car = new Car(6);
+		car.setNodeID(randCarArray.get(6).getNodeID());
+		car.setPoint_x(randCarArray.get(6).getNormalizedX());
+		car.setPoint_y(randCarArray.get(6).getNormalizedY());
+		carArray.add(car);
+		
+		randCarArray.add(nodeArray.get(16602));		//차량의 노드 위치
+		car = new Car(7);
+		car.setNodeID(randCarArray.get(7).getNodeID());
+		car.setPoint_x(randCarArray.get(7).getNormalizedX());
+		car.setPoint_y(randCarArray.get(7).getNormalizedY());
+		carArray.add(car);
+		
+		
+		
 		return carArray;
 	}
 

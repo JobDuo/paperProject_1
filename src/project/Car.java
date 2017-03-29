@@ -12,6 +12,8 @@ class Car implements Serializable{
 	private double point_x;		//자동차 위치
 	private double point_y;
 	private double km;			//자동차 시속
+
+	private double weight = 130;
 	
 	/**
 	 * 자동차 고유번호
@@ -27,6 +29,12 @@ class Car implements Serializable{
 		return carId;
 	}
 	
+	/**
+	 * 자동차의 가중치
+	 */
+	public double get_Car_Dist(){
+		return weight;	//차량의 가중치
+	}
 	
 	/**
 	 * 차가 위치할 노드의 위치아이디
