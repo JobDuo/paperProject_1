@@ -76,14 +76,17 @@ class MainView extends JFrame{
 	Font font;
 	
 	ArrayList<Car> carArray = new ArrayList<Car>();		//실제 자동차 객체
-	ArrayList<Car> nearCarArray = new ArrayList<Car>();		//실제 근접한 자동차 객체
+	//ArrayList<Car> nearCarArray = new ArrayList<Car>();		//실제 근접한 자동차 객체
 	ArrayList<Car> nearCarArray_Temp = new ArrayList<Car>();		//실제 근접한 자동차 객체
-	ArrayList<Car> answer_CarArray = new ArrayList<Car>();		//k 대 안에 드는 자동차 객체
+	ArrayList<Integer> answer_Node = new ArrayList<Integer>();		//k 대 안에 드는 자동차 객체
 	
 	ArrayList<ArrayList<Integer>> shortest_Car_Path;	//최근접 차량 패스 저장
 	ArrayList<Double> shortest_Car_Dist;	//최근접 차량 패스 저장
 	
-
+	ArrayList<Integer> worth_Node = new ArrayList<Integer>();			//자명한 객체를 포함한 계산할 가치가 있는 노드
+	ArrayList<Integer> worth_Node_Culcu = new ArrayList<Integer>();		//자명한 객체를 포함하지 않은 계산할 가치가 있는 노드만 포함
+	
+	
 	ArrayList<SF_cnode> nodeArray = new ArrayList<SF_cnode>();		//지도 점 정보
 	ArrayList<SF_cedge> edgeArray = new ArrayList<SF_cedge>();		//지도 선 정보
 	
@@ -350,6 +353,9 @@ class MainView extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				worth_Node.clear();
+				worth_Node_Culcu.clear();
+				
 				try{
 					NUM_OF_SEARCHING = Integer.parseInt(searchCountInput.getText());
 				}catch (Exception ex) {
@@ -367,49 +373,27 @@ class MainView extends JFrame{
 				
 				//nearCarArray.clear();
 				nearCarArray_Temp.clear();
-				answer_CarArray.clear(); //가장 근접한 객체의 집합
+				answer_Node.clear(); //가장 근접한 객체의 집합
 				
 				//쿼리 위치, 자동차, 찾을 개수, 자동차 개수, 쿼리로부터 직선거리 한계점: 구역나누기
 				//nearCarArray = knnAlgorithm.KnnAlgorithm(userQ, carArray, NUM_OF_SEARCHING, carArray.size(), userQ_Max_Dist/2);	//knn 에서 후보군을 자도
-				nearCarArray = carArray;
+				//nearCarArray = carArray;
 				//graph.dijkstra(userQ.getNodeID());	//쿼리 위치 넣어줌
 				
 				
-				//후보군을 뽑아서 NUM_OF_SEARCHING 번째 객체 밖에 존재하는 객체 제거
-				
-			
-				
-//				for(int i=0; i<nearCarArray_Temp.size();i++){
-//					
-//					System.out.println(nearCarArray_Temp.get(i).getNodeID() + "노드의 직선 거리 : " + graph.printQ3(nearCarArray_Temp.get(i).getNodeID()));
-//
-//					
-//					
-//					if(!(graph.printQ3(nearCarArray_Temp.get(NUM_OF_SEARCHING-1).getNodeID()) + nearCarArray_Temp.get(NUM_OF_SEARCHING-1).get_Car_Dist() <= //기준 객체의 최단 거리 + 가중치 
-//						graph.printQ3(nearCarArray_Temp.get(i).getNodeID())-nearCarArray_Temp.get(i).get_Car_Dist())){ 
-//						
-//						nearCarArray.add(nearCarArray_Temp.get(i));	//기준객체의 가중치 바깥에 존재하는 객체 제거함
-//						
-//					}
-//					////////////////이 부분 작동 안함 - 자명한 객체 제외 하는 루틴
-//					if(graph.printQ3(nearCarArray_Temp.get(NUM_OF_SEARCHING-1).getNodeID())-nearCarArray_Temp.get(NUM_OF_SEARCHING-1).get_Car_Dist() > //기준 객체의 최단 거리 + 가중치 
-//						graph.printQ3(nearCarArray_Temp.get(i).getNodeID())+nearCarArray_Temp.get(i).get_Car_Dist()){	//자명한 객체
-//						answer_CarArray.add(nearCarArray_Temp.get(i));
-//						System.out.println("@@");
-//					}
-//					
-//				}
 				
 				
 				
 				
 				
-				System.out.println("리턴사이즈 : " + nearCarArray.size());
+				
+				System.out.println("리턴사이즈 : " + carArray.size());
 				//serchCar();
-				s_resultID = serch.serchShortestCar(graph, userQ, nearCarArray, nearCarArray.size());	//최단거리 자동차 찾기  k 대 찾기
-				shortest_Car_Path = serch.serchShortestCarPath(graph, nearCarArray.size());				//최단거리 패스 찾기		//그림 이상해짐 로직은 맞음 그림 수정하려면 ->  nearCarArray.size() = NUM_OF_SEARCHING 로 변경 
+				s_resultID = serch.serchShortestCar(graph, userQ, carArray, carArray.size());	//최단거리 자동차 찾기  k 대 찾기
+				shortest_Car_Path = serch.serchShortestCarPath(graph, carArray.size());				//최단거리 패스 찾기		//그림 이상해짐 로직은 맞음 그림 수정하려면 ->  nearCarArray.size() = NUM_OF_SEARCHING 로 변경 
 				shortest_Car_Dist = serch.serchShortestCarDisk(graph);									//최단거리 자동차 까지의 거리
 				Car_Path_Stop_Point = serch.car_Path_Stop_Point();										//패스가 이어지는 부분 제거하기위해
+				
 				
 				/**
 				 * 최단 거리 차량의 주변 노드 찍기
@@ -422,21 +406,97 @@ class MainView extends JFrame{
 				
 				
 				
-				for(int i=0; i<nearCarArray.size(); i++){
-					carNeighborNodeIdArray = graph.getLinkNode(s_resultID.get(i));  //차량주변 노드
-					carNodeId.add(s_resultID.get(i));								//차량 노드
-					carNeighborNodeId.add(carNeighborNodeIdArray);					//차량이 존재하는 곳의 인접 노드호출
-					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//차령 주변노드 개수
-					System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
-					
-				
-				}									  
+//				for(int i=0; i<carArray.size(); i++){
+//					carNeighborNodeIdArray = graph.getLinkNode(s_resultID.get(i));  //차량주변 노드
+//					carNodeId.add(s_resultID.get(i));								//차량 노드
+//					carNeighborNodeId.add(carNeighborNodeIdArray);					//차량이 존재하는 곳의 인접 노드호출
+//					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//차령 주변노드 개수
+//					//System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
+//				}									  
 
 				
 				
 				all_Dist = graph.printQ3(s_resultID.get((NUM_OF_SEARCHING)-1));	//차량의 주변 노드 에서 쿼리 지점까지의 최단거리 //0을 -> n번째 존재하는 차량 객체로 변경해야함
 				System.out.println("감마 기준값 : " + all_Dist);
 				System.out.println("감마 기준값 노드 : " + s_resultID.get((NUM_OF_SEARCHING)-1));
+				
+				
+				//후보군을 뽑아서 NUM_OF_SEARCHING 번째 객체 밖에 존재하는 객체 제거
+				for(int i=0; i<carArray.size();i++){
+			
+					
+					
+					if((all_Dist + carArray.get(NUM_OF_SEARCHING-1).get_Car_Dist() >= //기준 객체의 최단 거리 + 가중치 
+						graph.printQ3(s_resultID.get(i)) - carArray.get(i).get_Car_Dist())){ 
+						
+						//System.out.println("기준 거리 : " + all_Dist);
+						//
+						//nearCarArray.add(carArray.get(i));	//기준객체의 가중치 바깥에 존재하는 객체 제거함
+						boolean overlap_C = true;
+						for(int j=0; j< worth_Node.size(); j++){
+							if(worth_Node.get(j) == s_resultID.get(i)){	//중복제거
+								overlap_C = false;
+								break;
+							}
+						}
+						if(overlap_C){
+							worth_Node.add(s_resultID.get(i));	//계산할 가치가 있는 노드	
+						}
+						//System.out.println("계산 할 가치가 있는  " + s_resultID.get(i));
+					}
+					////////////////이 부분 작동 안함 - 자명한 객체 제외 하는 루틴
+//					if(graph.printQ3(nearCarArray_Temp.get(NUM_OF_SEARCHING-1).getNodeID())-nearCarArray_Temp.get(NUM_OF_SEARCHING-1).get_Car_Dist() > //기준 객체의 최단 거리 + 가중치 
+//						graph.printQ3(nearCarArray_Temp.get(i).getNodeID())+nearCarArray_Temp.get(i).get_Car_Dist()){	//자명한 객체
+//						answer_CarArray.add(nearCarArray_Temp.get(i));
+//						System.out.println("@@");
+//					}
+					
+				}
+				
+				//계산할 필요없이 자명하게 가까운 객체 건져 내기
+				for(int i=0; i< worth_Node.size(); i++){
+					if(all_Dist - carArray.get(NUM_OF_SEARCHING-1).get_Car_Dist() > 
+						graph.printQ3(worth_Node.get(i)) + carArray.get(i).get_Car_Dist()){
+						
+						answer_Node.add(worth_Node.get(i));
+						//System.out.println("자명하게 가까운 객체 = " + worth_Node.get(i));
+					}
+				}
+				
+				
+				
+				for(int i=0; i< worth_Node.size(); i++){	
+					boolean overlap_C = true;
+					for(int j=0; j< answer_Node.size(); j++){
+						if(worth_Node.get(i) == answer_Node.get(j)){	//순수하게 계산 할 가치가 있는 노드를 건져냄
+							overlap_C = false;
+							break;
+						}
+					}
+					if(overlap_C){
+						worth_Node_Culcu.add(worth_Node.get(i));	//계산할 가치가 있는 노드	
+					}
+				}
+				
+				
+				for(int i=0; i < worth_Node_Culcu.size(); i++){
+					//System.out.println("계산할 가치가 있는 노드: " +  worth_Node_Culcu.get(i));
+				}
+				
+				for(int i=0; i< answer_Node.size(); i++){
+					System.out.println("자명하게 가까운 객체: " + answer_Node.get(i));
+				}
+				
+				
+				//계산할 가치가 있는 노드를 기준으로 잡는다.
+				for(int i=0; i<worth_Node_Culcu.size(); i++){
+					carNeighborNodeIdArray = graph.getLinkNode(worth_Node_Culcu.get(i));  //차량주변 노드
+					carNodeId.add(worth_Node_Culcu.get(i));								//차량 노드
+					carNeighborNodeId.add(carNeighborNodeIdArray);					//차량이 존재하는 곳의 인접 노드호출
+					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//차령 주변노드 개수
+					//System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
+				}				
+				
 				
 				//2배수를 불러오기때문에 찾고자 하는 차량보다 2배 이상 많이 설정해야하며 이곳에서 감마 기준값대비 자명한 객체를 골라내고 확률 을 비교해야할 객체를 골라내야한다.
 				
@@ -649,10 +709,13 @@ class DrawPanel extends JPanel {
 						if(s_check){
 						g.setColor(Color.yellow);
 						//int neighbor_Car_Path_Stop_Point_For_Start = 0;//자동차 스톱 포인트 리스트는 연결되기 떄문에 연결부분을 제거 해주는 템프 변수
-						
-						for(int i=0; i<NUM_OF_SEARCHING; i++){
+						//worth_Node_Culcu 
+						//answer_Node
+						//for(int i=0; i<NUM_OF_SEARCHING; i++){
+						for(int i=0; i<worth_Node_Culcu.size(); i++){
 							
 							carNeighborNodeIdTemp = carNeighborNodeId.get(i);
+							
 							//System.out.println("carNeighborNodeId.get(i) = " + carNeighborNodeId.get(i));
 							
 							
@@ -716,10 +779,17 @@ class DrawPanel extends JPanel {
 								
 								//일단 거리 50을 기준으로 계산함 추후 자동차의 속력과 통신시간을 고려해서 계산 해야함
 								
-								v_All_Car_Distance = Ad(nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), nodeArray.get(carNodeId.get(i)).getNodeID(), 
+//								v_All_Car_Distance = Ad(
+//										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
+//										nodeArray.get(carNodeId.get(i)).getNodeID(), 
+//										carArray.get(i).get_Car_Dist(), 
+//										carNodeId.get(i), i);
+								
+								v_All_Car_Distance = Ad(
+										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
+										worth_Node_Culcu.get(i), 
 										carArray.get(i).get_Car_Dist(), 
 										carNodeId.get(i), i);
-								
 								
 								
 								tempG_node_Num = new ArrayList<Integer>();
@@ -727,7 +797,14 @@ class DrawPanel extends JPanel {
 								short_Path = new ArrayList<Integer>();
 								
 							
-								Gd(nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), nodeArray.get(carNodeId.get(i)).getNodeID(), 
+//								Gd(
+//										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
+//										nodeArray.get(carNodeId.get(i)).getNodeID(), 
+//										input_Gama_Temp
+//										);
+								Gd(
+										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
+										worth_Node_Culcu.get(i), 
 										input_Gama_Temp
 										);
 								
@@ -737,6 +814,9 @@ class DrawPanel extends JPanel {
 							//neighbor_Car_Path_Stop_Point_For_Start = neighbor_Car_Path_Stop_Point.get(i);
 							System.out.print(nodeArray.get(carNodeId.get(i)).getNodeID() + " 번째 차 의 총 이동 거리(Ad()) = " + v_All_Car_Distance + 
 									", 직선거리 = " + graph.printQ3(nodeArray.get(carNodeId.get(i)).getNodeID()));
+							
+//							System.out.print(worth_Node_Culcu.get(i) + " 번째 차 의 총 이동 거리(Ad()) = " + v_All_Car_Distance + 
+//									", 직선거리 = " + graph.printQ3(worth_Node_Culcu.get(i)));
 						   
 							//중복된 감마값 제거
 							if(gama_Value > v_All_Car_Distance){
@@ -745,18 +825,37 @@ class DrawPanel extends JPanel {
 							
 							System.out.println(", 감마값 : " + (gama_Value-input_Gama_Temp));
 						
+							/**
+							 * 확률 연산 
+							 */
+							
+							//(a)의 경우 Query 지점으로 부터 n번째 객체의 최장거리가 기준 객체의 최장거리보다 작으면서 최단 거리는 가까운 경우
+							if(){
+								
+							
+							//(b) Query 지점으로부터 기준 객체의 최단거리가 n번째 객체의 최단 거리보다 크면서 최장거리는 짧은 경우.
+							}else if(){
+								
+								
+							//(c) Query 지점으로부터 기준 객체의 최단거리가 n번째 객체의 최단거리보다 짧으면서 최장 거리는 큰 경우.
+							}else{
+								
+							}
+							
 							
 							gama_Value = 0;
 							
 							
 						}	
 					
+						
+						
+					
+						
+						
+						
+						
 						} 	
-						
-						
-						
-						
-						
 						/**
 						 * 쿼리 위치 그리기 
 						 */
