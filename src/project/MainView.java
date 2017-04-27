@@ -1,3 +1,5 @@
+
+
 package project;
 
 import java.awt.BorderLayout;
@@ -16,6 +18,7 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import javax.swing.Icon;
@@ -39,24 +42,24 @@ class MainView extends JFrame{
 	int[] Car_Path_Stop_Point;	//
 	ArrayList<Integer> neighbor_Car_Path_Stop_Point = new ArrayList<Integer>();
 
-	int mapPoint_x = 0;		//½ºÅ©·Ñ¹Ù È­¸é Á¶Á¤
+	int mapPoint_x = 0;		//ìŠ¤í¬ë¡¤ë°” í™”ë©´ ì¡°ì •
 	int mapPoint_y = 0;
-	int viewPanel_x = 0;	//ÆĞ³Î ¿òÁ÷ÀÌ±â
+	int viewPanel_x = 0;	//íŒ¨ë„ ì›€ì§ì´ê¸°
 	int viewPanel_y = 0;
 	
 	/**
-	 * ÆĞ³Î À§¿¡¼­ ¸¶¿ì½º·Î ³ëµå È®ÀÎÇÏ±â
+	 * íŒ¨ë„ ìœ„ì—ì„œ ë§ˆìš°ìŠ¤ë¡œ ë…¸ë“œ í™•ì¸í•˜ê¸°
 	 */
 	int node_Check_x = 0;
 	int node_Check_y = 0;
 	int node_Check_num = 0;
-	double all_Dist = 0;//Â÷·®°ú Äõ¸® ÁöÁ¡À¸·ÎºÎÅÍÀÇ ÃÖÁ¾±æÀÌ
+	double all_Dist = 0;//ì°¨ëŸ‰ê³¼ ì¿¼ë¦¬ ì§€ì ìœ¼ë¡œë¶€í„°ì˜ ìµœì¢…ê¸¸ì´
 	boolean node_Check = false;
 	
-	private static int RATIO = 5;  // ÁöµµºñÀ²¿¡ ¾µ º¯¼ö
-	private static int NUM_OF_SEARCHING = 5; // Ã£À» ¼ö
+	private static int RATIO = 5;  // ì§€ë„ë¹„ìœ¨ì— ì“¸ ë³€ìˆ˜
+	private static int NUM_OF_SEARCHING = 5; // ì°¾ì„ ìˆ˜
 	private static int CARCOUNT = 100;	
-	private static int QUERYPOINT = 10671;	
+	private static int QUERYPOINT = 14207;//;10671;	 14207
 	
 	
 	private Graph.mapLine[] GRAPH = new Graph.mapLine[23874];
@@ -64,9 +67,9 @@ class MainView extends JFrame{
 	Graph graph_Node_Dist;
 	
 	AddMapData addMapData = new AddMapData();
-	LoadFile loadFile = new LoadFile();//ÆÄÀÏ ·Îµå
+	LoadFile loadFile = new LoadFile();//íŒŒì¼ ë¡œë“œ
 	SF_cnode userQ;
-	double userQ_Max_Dist = 2000; //ÀÓ½Ã·Î 5000;
+	double userQ_Max_Dist = 2000; //ì„ì‹œë¡œ 5000;
 	
 	Serch serch = new Serch();
 	Random random = new Random();
@@ -75,31 +78,32 @@ class MainView extends JFrame{
 	
 	Font font;
 	
-	ArrayList<Car> carArray = new ArrayList<Car>();		//½ÇÁ¦ ÀÚµ¿Â÷ °´Ã¼
-	//ArrayList<Car> nearCarArray = new ArrayList<Car>();		//½ÇÁ¦ ±ÙÁ¢ÇÑ ÀÚµ¿Â÷ °´Ã¼
-	ArrayList<Car> nearCarArray_Temp = new ArrayList<Car>();		//½ÇÁ¦ ±ÙÁ¢ÇÑ ÀÚµ¿Â÷ °´Ã¼
-	ArrayList<Integer> answer_Node = new ArrayList<Integer>();		//k ´ë ¾È¿¡ µå´Â ÀÚµ¿Â÷ °´Ã¼
+	ArrayList<Car> carArray = new ArrayList<Car>();		//ì‹¤ì œ ìë™ì°¨ ê°ì²´
+	//ArrayList<Car> nearCarArray = new ArrayList<Car>();		//ì‹¤ì œ ê·¼ì ‘í•œ ìë™ì°¨ ê°ì²´
+	ArrayList<Car> nearCarArray_Temp = new ArrayList<Car>();		//ì‹¤ì œ ê·¼ì ‘í•œ ìë™ì°¨ ê°ì²´
+	ArrayList<Integer> answer_Node = new ArrayList<Integer>();		//k ëŒ€ ì•ˆì— ë“œëŠ” ìë™ì°¨ ê°ì²´
 	
-	ArrayList<ArrayList<Integer>> shortest_Car_Path;	//ÃÖ±ÙÁ¢ Â÷·® ÆĞ½º ÀúÀå
-	ArrayList<Double> shortest_Car_Dist;	//ÃÖ±ÙÁ¢ Â÷·® ÆĞ½º ÀúÀå
+	ArrayList<ArrayList<Integer>> shortest_Car_Path;	//ìµœê·¼ì ‘ ì°¨ëŸ‰ íŒ¨ìŠ¤ ì €ì¥
+	ArrayList<Double> shortest_Car_Dist;	//ìµœê·¼ì ‘ ì°¨ëŸ‰ íŒ¨ìŠ¤ ì €ì¥
 	
-	ArrayList<Integer> worth_Node = new ArrayList<Integer>();			//ÀÚ¸íÇÑ °´Ã¼¸¦ Æ÷ÇÔÇÑ °è»êÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå
-	ArrayList<Integer> worth_Node_Culcu = new ArrayList<Integer>();		//ÀÚ¸íÇÑ °´Ã¼¸¦ Æ÷ÇÔÇÏÁö ¾ÊÀº °è»êÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå¸¸ Æ÷ÇÔ
+	ArrayList<Integer> worth_Node = new ArrayList<Integer>();			//ìëª…í•œ ê°ì²´ë¥¼ í¬í•¨í•œ ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œ
+	ArrayList<Integer> worth_Node_Culcu = new ArrayList<Integer>();		//ìëª…í•œ ê°ì²´ë¥¼ í¬í•¨í•˜ì§€ ì•Šì€ ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œë§Œ í¬í•¨
 	
 	
-	ArrayList<SF_cnode> nodeArray = new ArrayList<SF_cnode>();		//Áöµµ Á¡ Á¤º¸
-	ArrayList<SF_cedge> edgeArray = new ArrayList<SF_cedge>();		//Áöµµ ¼± Á¤º¸
+	ArrayList<SF_cnode> nodeArray = new ArrayList<SF_cnode>();		//ì§€ë„ ì  ì •ë³´
+	ArrayList<SF_cedge> edgeArray = new ArrayList<SF_cedge>();		//ì§€ë„ ì„  ì •ë³´
 	
-	ArrayList<Integer> carNeighborNodeIdTemp = new ArrayList<Integer>();	//ÀÚµ¿Â÷ ±ÙÃ³ ³ëµå
+	ArrayList<Integer> carNeighborNodeIdTemp = new ArrayList<Integer>();	//ìë™ì°¨ ê·¼ì²˜ ë…¸ë“œ
 	ArrayList<ArrayList<Integer>> carNeighborNodeId = new ArrayList<ArrayList<Integer>>();
 	ArrayList<Integer> carNodeId = new ArrayList<Integer>();
-	ArrayList<Integer> carNeighborNodeIdArray  = new ArrayList<Integer>();	//Â÷·® ±ÙÁ¢ ³ëµå ¾ÆÀÌµğ
+	ArrayList<Integer> carNeighborNodeIdArray  = new ArrayList<Integer>();	//ì°¨ëŸ‰ ê·¼ì ‘ ë…¸ë“œ ì•„ì´ë””
 	
+	ArrayList<Car> worth_Car = new ArrayList<Car>();
 	
-	//¼­¹ö ¿¬µ¿
+	//ì„œë²„ ì—°ë™
 	ServerBackground serverBackground = new ServerBackground();
 	
-	DrawPanel drawPanel = new DrawPanel();		//±×¸² ±×¸®±â ÆĞ³Î
+	DrawPanel drawPanel = new DrawPanel();		//ê·¸ë¦¼ ê·¸ë¦¬ê¸° íŒ¨ë„
 	
 	public MainView(String title) {
 		// TODO Auto-generated constructor stub
@@ -108,14 +112,14 @@ class MainView extends JFrame{
 	 
 
 		
-		//³ëµåÃß°¡
+		//ë…¸ë“œì¶”ê°€
 		nodeArray = addMapData.get_Node();
 		
-		//¿§ÁöÃß°¡
+		//ì—£ì§€ì¶”ê°€
 		edgeArray = addMapData.get_Edge();
 		 
 		/**
-		 * ±×·¡ÇÁ »ı¼º
+		 * ê·¸ë˜í”„ ìƒì„±
 		 */
 		for (SF_cedge edg : edgeArray){ 	
         	GRAPH = addMapData.edge2Graph(edg);
@@ -123,28 +127,28 @@ class MainView extends JFrame{
 		graph = new Graph(GRAPH);
 		
 		/**
-		 * È­¸é±¸¼º
+		 * í™”ë©´êµ¬ì„±
 		 */
 		DrawButtonPanel drawButtonPanel = new DrawButtonPanel();
-		drawButtonPanel.setLayout(null);			//¹öÆ°À§Ä¡ ÁöÁ¤ÇÒ ¼ö ÀÖµµ·Ï
+		drawButtonPanel.setLayout(null);			//ë²„íŠ¼ìœ„ì¹˜ ì§€ì •í•  ìˆ˜ ìˆë„ë¡
 		drawPanel.setLayout(null);
 		
-		JButton c_Car_B = new JButton("Â÷·£´ı»ı¼º");
-		JButton search_B = new JButton("Ã£±â");
+		JButton c_Car_B = new JButton("ì°¨ëœë¤ìƒì„±");
+		JButton search_B = new JButton("ì°¾ê¸°");
 		JButton left = new JButton("<-");
 		JButton right = new JButton("->");
 		JButton up = new JButton("Up");
 		JButton down = new JButton("Down");
-		JButton zoomIn = new JButton("È®´ë");
-		JButton zoomOut = new JButton("Ãà¼Ò");
-		JButton query_Point = new JButton("Äõ¸® À§Ä¡ ÁöÁ¤ÇÏ±â");
+		JButton zoomIn = new JButton("í™•ëŒ€");
+		JButton zoomOut = new JButton("ì¶•ì†Œ");
+		JButton query_Point = new JButton("ì¿¼ë¦¬ ìœ„ì¹˜ ì§€ì •í•˜ê¸°");
 		JTextField carCountInput = new JTextField(5); 
 		JTextField searchCountInput = new JTextField(5); 
 		JTextField queryPointInput = new JTextField(5); 
 		
 		
 		/**
-		 * ¹öÆ° °´Ã¼ À§Ä¡ ÁöÁ¤
+		 * ë²„íŠ¼ ê°ì²´ ìœ„ì¹˜ ì§€ì •
 		 */
 		carCountInput.setBounds(30, 30, 100, 50);
 		c_Car_B.setBounds(140, 30, 100, 50);
@@ -173,39 +177,39 @@ class MainView extends JFrame{
 		drawButtonPanel.add(zoomOut);
 		
 		
-		drawPanel.setBounds(1, 1, 1, 1); 	//ÆĞ³ÎÀ§Ä¡¹× »çÀÌÁî
-		drawButtonPanel.setBounds(1, 1, 1, 1); 	//ÆĞ³ÎÀ§Ä¡¹× »çÀÌÁî
+		drawPanel.setBounds(1, 1, 1, 1); 	//íŒ¨ë„ìœ„ì¹˜ë° ì‚¬ì´ì¦ˆ
+		drawButtonPanel.setBounds(1, 1, 1, 1); 	//íŒ¨ë„ìœ„ì¹˜ë° ì‚¬ì´ì¦ˆ
 		
 		
 		JScrollPane scroll;
-		scroll = new JScrollPane();  // ½ºÅ©·ÑÆĞ³ÎÀ» ¼±¾ğ
+		scroll = new JScrollPane();  // ìŠ¤í¬ë¡¤íŒ¨ë„ì„ ì„ ì–¸
 		//scroll.setViewportView(drawPanel);
 
 		
-		JPanel viewPanel = new JPanel();	//ºä ÆĞ³Î¾È¿¡ ÀÖ´Â drawPanelÀÇ ÁÂÇ¥¸¦¿òÁ÷ÀÎ´Ù. ºäÆĞ³ÎÀº °íÁ¤µÇ¾îÀÖ°í drawPanelÀº ¾Æ·¡¿¡¼­ ¿òÁ÷ÀÓ
+		JPanel viewPanel = new JPanel();	//ë·° íŒ¨ë„ì•ˆì— ìˆëŠ” drawPanelì˜ ì¢Œí‘œë¥¼ì›€ì§ì¸ë‹¤. ë·°íŒ¨ë„ì€ ê³ ì •ë˜ì–´ìˆê³  drawPanelì€ ì•„ë˜ì—ì„œ ì›€ì§ì„
 		viewPanel.setLayout(null);
 		viewPanel.add(drawPanel);
 		
 		
 		scroll.setViewportView(viewPanel);
-		scroll.setBounds(50, 50, 700, 700);    // ÇÁ·¹ÀÓ¿¡ ½ºÅ©·ÑÆĞ³ÎÀÇ À§Ä¡¸¦ Á¤ÇÑ´Ù
+		scroll.setBounds(50, 50, 700, 700);    // í”„ë ˆì„ì— ìŠ¤í¬ë¡¤íŒ¨ë„ì˜ ìœ„ì¹˜ë¥¼ ì •í•œë‹¤
 		
 		
 		add(scroll);
 		//add(drawPanel);
 		add(drawButtonPanel);
 		
-		setSize(1600, 1000);				//ÇÁ·¹ÀÓ Å©±âÁöÁ¤
+		setSize(1600, 1000);				//í”„ë ˆì„ í¬ê¸°ì§€ì •
 		
-		setVisible(true);					//ÇÁ·¹ÀÓ º¸ÀÌ±â
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		//ÇÁ·¹ÀÓ Á¤»óÁ¾·á°¡´É
+		setVisible(true);					//í”„ë ˆì„ ë³´ì´ê¸°
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		//í”„ë ˆì„ ì •ìƒì¢…ë£Œê°€ëŠ¥
 		
 		
 		//********************************************************************************************************************
 		
 		
 		/**
-		 * drawPanel ÆĞ³Î¿¡ ÀÌº¥Æ® Ãß°¡
+		 * drawPanel íŒ¨ë„ì— ì´ë²¤íŠ¸ ì¶”ê°€
 		 */
 	
 		drawPanel.addMouseMotionListener(new MouseMotionListener() {
@@ -216,15 +220,15 @@ class MainView extends JFrame{
 			
 				
 				/**
-				 * ÆĞ³Î¿¡ ¸¶¿ì½º ¿Ã¸±¶§ ÁÂÇ¥ 
+				 * íŒ¨ë„ì— ë§ˆìš°ìŠ¤ ì˜¬ë¦´ë•Œ ì¢Œí‘œ 
 				 */
 				for(int i=0; i<nodeArray.size(); i++){
 				
 					if(e.getX() >= (int)nodeArray.get(i).getNormalizedX()/RATIO-3 && e.getX() <= (int)nodeArray.get(i).getNormalizedX()/RATIO+3){
 						
 						if(e.getY() >= (int)nodeArray.get(i).getNormalizedY()/RATIO-3  && e.getY() <= (int)nodeArray.get(i).getNormalizedY()/RATIO+3){
-							//System.out.println("°ãÄ§");
-							node_Check = true;		//°ãÄ¥¶§ ³ëµå Âï¾îÁÜ
+							//System.out.println("ê²¹ì¹¨");
+							node_Check = true;		//ê²¹ì¹ ë•Œ ë…¸ë“œ ì°ì–´ì¤Œ
 							node_Check_x = e.getX();
 							node_Check_y = e.getY();
 							
@@ -253,7 +257,7 @@ class MainView extends JFrame{
 		
 		
 		//JScrollPane scrollPane = new JScrollPane(drawPanel);
-		//ÆĞ³Î¿¡ Á÷Á¢ ±×¸®Áö ¾Ê°í ´Ù¸¥ ¹«¾ğ°¡ À§¿¡ ±×¸®´Â°ÍÀ» °í·Á ÇØ¾ß ÇÒµí ½Ã¹ß
+		//íŒ¨ë„ì— ì§ì ‘ ê·¸ë¦¬ì§€ ì•Šê³  ë‹¤ë¥¸ ë¬´ì–¸ê°€ ìœ„ì— ê·¸ë¦¬ëŠ”ê²ƒì„ ê³ ë ¤ í•´ì•¼ í• ë“¯ ì‹œë°œ
 		
 		
 		
@@ -261,11 +265,11 @@ class MainView extends JFrame{
 		
 		
 		
-		//Äõ¸® À§Ä¡
-		userQ = nodeArray.get(QUERYPOINT);	//Äõ¸®À§Ä¡
+		//ì¿¼ë¦¬ ìœ„ì¹˜
+		userQ = nodeArray.get(QUERYPOINT);	//ì¿¼ë¦¬ìœ„ì¹˜
 		
 		/**
-		 * Â÷·£´ı»ı¼º ¹öÆ°
+		 * ì°¨ëœë¤ìƒì„± ë²„íŠ¼
 		 */
 		c_Car_B.addActionListener(new ActionListener() {
 			@Override
@@ -273,25 +277,25 @@ class MainView extends JFrame{
 				// TODO Auto-generated method stub
 				
 				/**
-				 * Â÷·® °¹¼ö ÀÔ·Â ¹Ş¾Æ¿È
+				 * ì°¨ëŸ‰ ê°¯ìˆ˜ ì…ë ¥ ë°›ì•„ì˜´
 				 */
 				try{
 					CARCOUNT = Integer.parseInt(carCountInput.getText());
 				}catch (Exception ex) {
 					// TODO: handle exception
-					System.out.println("¼ıÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä.");
+					System.out.println("ìˆ«ìë¥¼ ì…ë ¥í•˜ì„¸ìš”.");
 				}
 				
 				/**
-				 * Â÷·®Á¤º¸ »ğÀÔ
+				 * ì°¨ëŸ‰ì •ë³´ ì‚½ì…
 				 */
 				carArray.clear();
-				carArray = addMapData.addRandCar(CARCOUNT);			//Â÷·®Ãß°¡
+				carArray = addMapData.addRandCar(CARCOUNT);			//ì°¨ëŸ‰ì¶”ê°€
 				
 				
 				/**
-				 * Â÷ÀÇ ¿òÁ÷ÀÓÀº ³ëµå¸¦ µû¶ó ÀÌµ¿ÇÏ±â¶§¹®¿¡ ±×·¡ÇÁ°¡ Á¸ÀçÇÏ´Â Å¬·¡½º¿¡¼­ È®ÀÎÇÒ¼öÀÖ´Ù.
-				 * Â÷·®ÀÇ ¿òÁ÷ÀÓÀº º» ³í¹®ÁÖÁ¦ÀÇ ÀÌ½´°¡ ¾Æ´Ï´Ù.
+				 * ì°¨ì˜ ì›€ì§ì„ì€ ë…¸ë“œë¥¼ ë”°ë¼ ì´ë™í•˜ê¸°ë•Œë¬¸ì— ê·¸ë˜í”„ê°€ ì¡´ì¬í•˜ëŠ” í´ë˜ìŠ¤ì—ì„œ í™•ì¸í• ìˆ˜ìˆë‹¤.
+				 * ì°¨ëŸ‰ì˜ ì›€ì§ì„ì€ ë³¸ ë…¼ë¬¸ì£¼ì œì˜ ì´ìŠˆê°€ ì•„ë‹ˆë‹¤.
 				 */
 				
 				carNeighborNodeId.clear();
@@ -300,24 +304,24 @@ class MainView extends JFrame{
 				neighbor_Car_Path_Stop_Point.clear();
 				carNeighborNodeIdArray.clear();
 				
-				/* ¸ğµç Â÷·®ÀÇ ÁÖº¯ Âï±â
+				/* ëª¨ë“  ì°¨ëŸ‰ì˜ ì£¼ë³€ ì°ê¸°
 				for(int i=0; i<CARCOUNT; i++){
 					//carNeighborNodeIdArray = graph.getLinkNode(carArray.get(i).getNodeID());
-					carNeighborNodeId.add(carNeighborNodeIdArray);	//Â÷·®ÀÌ Á¸ÀçÇÏ´Â °÷ÀÇ ÀÎÁ¢ ³ëµåÈ£Ãâ
-					//carNodeId.add(carArray.get(i).getNodeID());	//Â÷·® ³ëµå
+					carNeighborNodeId.add(carNeighborNodeIdArray);	//ì°¨ëŸ‰ì´ ì¡´ì¬í•˜ëŠ” ê³³ì˜ ì¸ì ‘ ë…¸ë“œí˜¸ì¶œ
+					//carNodeId.add(carArray.get(i).getNodeID());	//ì°¨ëŸ‰ ë…¸ë“œ
 					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());
 					//carArray.get(i).setNeighborNode(nodeCount);
 				}*/
 				
 				s_check = false;
 				
-				drawPanel.repaint();	//»õ·Î±×¸®±â
+				drawPanel.repaint();	//ìƒˆë¡œê·¸ë¦¬ê¸°
 			}
 		});
 		
 		
 		/**
-		 * Â÷·® Ãß°¡¸¦ ÀÚµ¿Â÷¿Í Åë½ÅÀ» ÅëÇØ Ãß°¡ÇÑ´Ù.
+		 * ì°¨ëŸ‰ ì¶”ê°€ë¥¼ ìë™ì°¨ì™€ í†µì‹ ì„ í†µí•´ ì¶”ê°€í•œë‹¤.
 		 */
 		
 		
@@ -327,7 +331,7 @@ class MainView extends JFrame{
 		//********************************************************************************************************************
 		
 		/**
-		 * Äõ¸® À§Ä¡ º¯°æ ¹öÆ°
+		 * ì¿¼ë¦¬ ìœ„ì¹˜ ë³€ê²½ ë²„íŠ¼
 		 */
 		query_Point.addActionListener(new ActionListener() {
 			
@@ -336,17 +340,17 @@ class MainView extends JFrame{
 				// TODO Auto-generated method stub
 				try{
 					QUERYPOINT = Integer.parseInt(queryPointInput.getText());
-					userQ = nodeArray.get(QUERYPOINT);	//Äõ¸®À§Ä¡
+					userQ = nodeArray.get(QUERYPOINT);	//ì¿¼ë¦¬ìœ„ì¹˜
 				}catch (Exception ex) {
 					// TODO: handle exception
-					System.out.println("¼ıÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä.");
+					System.out.println("ìˆ«ìë¥¼ ì…ë ¥í•˜ì„¸ìš”.");
 				}
 				 
 			}
 		});
 		
 		/**
-		 * Ã£±â ¹öÆ°
+		 * ì°¾ê¸° ë²„íŠ¼
 		 */
 	
 		search_B.addActionListener(new ActionListener() {
@@ -360,25 +364,25 @@ class MainView extends JFrame{
 					NUM_OF_SEARCHING = Integer.parseInt(searchCountInput.getText());
 				}catch (Exception ex) {
 					// TODO: handle exception
-					System.out.println("¼ıÀÚ¸¦ ÀÔ·ÂÇÏ¼¼¿ä.");
+					System.out.println("ìˆ«ìë¥¼ ì…ë ¥í•˜ì„¸ìš”.");
 				}
-				int NUM_OF_SEARCHING_Candidate = 0;//NUM_OF_SEARCHING ÀÇ ÈÄº¸±º
+				int NUM_OF_SEARCHING_Candidate = 0;//NUM_OF_SEARCHING ì˜ í›„ë³´êµ°
 				NUM_OF_SEARCHING = NUM_OF_SEARCHING;
 				
 				// TODO Auto-generated method stub
 				
 				/**
-				 * knn ¾Ë°í¸®Áò »ç¿ëÈÄ ±ÙÁ¢ÇÑ ÈÄº¸±º¿¡¼­ ´ÙÀÍ½ºÆ®¶ó »ç¿ë
+				 * knn ì•Œê³ ë¦¬ì¦˜ ì‚¬ìš©í›„ ê·¼ì ‘í•œ í›„ë³´êµ°ì—ì„œ ë‹¤ìµìŠ¤íŠ¸ë¼ ì‚¬ìš©
 				 */
 				
 				//nearCarArray.clear();
 				nearCarArray_Temp.clear();
-				answer_Node.clear(); //°¡Àå ±ÙÁ¢ÇÑ °´Ã¼ÀÇ ÁıÇÕ
+				answer_Node.clear(); //ê°€ì¥ ê·¼ì ‘í•œ ê°ì²´ì˜ ì§‘í•©
 				
-				//Äõ¸® À§Ä¡, ÀÚµ¿Â÷, Ã£À» °³¼ö, ÀÚµ¿Â÷ °³¼ö, Äõ¸®·ÎºÎÅÍ Á÷¼±°Å¸® ÇÑ°èÁ¡: ±¸¿ª³ª´©±â
-				//nearCarArray = knnAlgorithm.KnnAlgorithm(userQ, carArray, NUM_OF_SEARCHING, carArray.size(), userQ_Max_Dist/2);	//knn ¿¡¼­ ÈÄº¸±ºÀ» ÀÚµµ
+				//ì¿¼ë¦¬ ìœ„ì¹˜, ìë™ì°¨, ì°¾ì„ ê°œìˆ˜, ìë™ì°¨ ê°œìˆ˜, ì¿¼ë¦¬ë¡œë¶€í„° ì§ì„ ê±°ë¦¬ í•œê³„ì : êµ¬ì—­ë‚˜ëˆ„ê¸°
+				//nearCarArray = knnAlgorithm.KnnAlgorithm(userQ, carArray, NUM_OF_SEARCHING, carArray.size(), userQ_Max_Dist/2);	//knn ì—ì„œ í›„ë³´êµ°ì„ ìë„
 				//nearCarArray = carArray;
-				//graph.dijkstra(userQ.getNodeID());	//Äõ¸® À§Ä¡ ³Ö¾îÁÜ
+				//graph.dijkstra(userQ.getNodeID());	//ì¿¼ë¦¬ ìœ„ì¹˜ ë„£ì–´ì¤Œ
 				
 				
 				
@@ -387,16 +391,16 @@ class MainView extends JFrame{
 				
 				
 				
-				System.out.println("¸®ÅÏ»çÀÌÁî : " + carArray.size());
+				System.out.println("ë¦¬í„´ì‚¬ì´ì¦ˆ : " + carArray.size());
 				//serchCar();
-				s_resultID = serch.serchShortestCar(graph, userQ, carArray, carArray.size());	//ÃÖ´Ü°Å¸® ÀÚµ¿Â÷ Ã£±â  k ´ë Ã£±â
-				shortest_Car_Path = serch.serchShortestCarPath(graph, carArray.size());				//ÃÖ´Ü°Å¸® ÆĞ½º Ã£±â		//±×¸² ÀÌ»óÇØÁü ·ÎÁ÷Àº ¸ÂÀ½ ±×¸² ¼öÁ¤ÇÏ·Á¸é ->  nearCarArray.size() = NUM_OF_SEARCHING ·Î º¯°æ 
-				shortest_Car_Dist = serch.serchShortestCarDisk(graph);									//ÃÖ´Ü°Å¸® ÀÚµ¿Â÷ ±îÁöÀÇ °Å¸®
-				Car_Path_Stop_Point = serch.car_Path_Stop_Point();										//ÆĞ½º°¡ ÀÌ¾îÁö´Â ºÎºĞ Á¦°ÅÇÏ±âÀ§ÇØ
+				s_resultID = serch.serchShortestCar(graph, userQ, carArray, carArray.size());	//ìµœë‹¨ê±°ë¦¬ ìë™ì°¨ ì°¾ê¸°  k ëŒ€ ì°¾ê¸°
+				shortest_Car_Path = serch.serchShortestCarPath(graph, carArray.size());				//ìµœë‹¨ê±°ë¦¬ íŒ¨ìŠ¤ ì°¾ê¸°		//ê·¸ë¦¼ ì´ìƒí•´ì§ ë¡œì§ì€ ë§ìŒ ê·¸ë¦¼ ìˆ˜ì •í•˜ë ¤ë©´ ->  nearCarArray.size() = NUM_OF_SEARCHING ë¡œ ë³€ê²½ 
+				shortest_Car_Dist = serch.serchShortestCarDisk(graph);									//ìµœë‹¨ê±°ë¦¬ ìë™ì°¨ ê¹Œì§€ì˜ ê±°ë¦¬
+				Car_Path_Stop_Point = serch.car_Path_Stop_Point();										//íŒ¨ìŠ¤ê°€ ì´ì–´ì§€ëŠ” ë¶€ë¶„ ì œê±°í•˜ê¸°ìœ„í•´
 				
 				
 				/**
-				 * ÃÖ´Ü °Å¸® Â÷·®ÀÇ ÁÖº¯ ³ëµå Âï±â
+				 * ìµœë‹¨ ê±°ë¦¬ ì°¨ëŸ‰ì˜ ì£¼ë³€ ë…¸ë“œ ì°ê¸°
 				 */
 				carNeighborNodeId.clear();
 				carNodeId.clear();
@@ -407,59 +411,59 @@ class MainView extends JFrame{
 				
 				
 //				for(int i=0; i<carArray.size(); i++){
-//					carNeighborNodeIdArray = graph.getLinkNode(s_resultID.get(i));  //Â÷·®ÁÖº¯ ³ëµå
-//					carNodeId.add(s_resultID.get(i));								//Â÷·® ³ëµå
-//					carNeighborNodeId.add(carNeighborNodeIdArray);					//Â÷·®ÀÌ Á¸ÀçÇÏ´Â °÷ÀÇ ÀÎÁ¢ ³ëµåÈ£Ãâ
-//					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//Â÷·É ÁÖº¯³ëµå °³¼ö
+//					carNeighborNodeIdArray = graph.getLinkNode(s_resultID.get(i));  //ì°¨ëŸ‰ì£¼ë³€ ë…¸ë“œ
+//					carNodeId.add(s_resultID.get(i));								//ì°¨ëŸ‰ ë…¸ë“œ
+//					carNeighborNodeId.add(carNeighborNodeIdArray);					//ì°¨ëŸ‰ì´ ì¡´ì¬í•˜ëŠ” ê³³ì˜ ì¸ì ‘ ë…¸ë“œí˜¸ì¶œ
+//					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//ì°¨ë ¹ ì£¼ë³€ë…¸ë“œ ê°œìˆ˜
 //					//System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
 //				}									  
 
 				
 				
-				all_Dist = graph.printQ3(s_resultID.get((NUM_OF_SEARCHING)-1));	//Â÷·®ÀÇ ÁÖº¯ ³ëµå ¿¡¼­ Äõ¸® ÁöÁ¡±îÁöÀÇ ÃÖ´Ü°Å¸® //0À» -> n¹øÂ° Á¸ÀçÇÏ´Â Â÷·® °´Ã¼·Î º¯°æÇØ¾ßÇÔ
-				System.out.println("°¨¸¶ ±âÁØ°ª : " + all_Dist);
-				System.out.println("°¨¸¶ ±âÁØ°ª ³ëµå : " + s_resultID.get((NUM_OF_SEARCHING)-1));
+				all_Dist = graph.printQ3(s_resultID.get((NUM_OF_SEARCHING)-1));	//ì°¨ëŸ‰ì˜ ì£¼ë³€ ë…¸ë“œ ì—ì„œ ì¿¼ë¦¬ ì§€ì ê¹Œì§€ì˜ ìµœë‹¨ê±°ë¦¬ //0ì„ -> në²ˆì§¸ ì¡´ì¬í•˜ëŠ” ì°¨ëŸ‰ ê°ì²´ë¡œ ë³€ê²½í•´ì•¼í•¨
+				System.out.println("ê°ë§ˆ ê¸°ì¤€ê°’ : " + all_Dist);
+				System.out.println("ê°ë§ˆ ê¸°ì¤€ê°’ ë…¸ë“œ : " + s_resultID.get((NUM_OF_SEARCHING)-1));
 				
 				
-				//ÈÄº¸±ºÀ» »Ì¾Æ¼­ NUM_OF_SEARCHING ¹øÂ° °´Ã¼ ¹Û¿¡ Á¸ÀçÇÏ´Â °´Ã¼ Á¦°Å
+				//í›„ë³´êµ°ì„ ë½‘ì•„ì„œ NUM_OF_SEARCHING ë²ˆì§¸ ê°ì²´ ë°–ì— ì¡´ì¬í•˜ëŠ” ê°ì²´ ì œê±°
 				for(int i=0; i<carArray.size();i++){
 			
 					
 					
-					if((all_Dist + carArray.get(NUM_OF_SEARCHING-1).get_Car_Dist() >= //±âÁØ °´Ã¼ÀÇ ÃÖ´Ü °Å¸® + °¡ÁßÄ¡ 
+					if((all_Dist + carArray.get(NUM_OF_SEARCHING-1).get_Car_Dist() >= //ê¸°ì¤€ ê°ì²´ì˜ ìµœë‹¨ ê±°ë¦¬ + ê°€ì¤‘ì¹˜ 
 						graph.printQ3(s_resultID.get(i)) - carArray.get(i).get_Car_Dist())){ 
 						
-						//System.out.println("±âÁØ °Å¸® : " + all_Dist);
+						//System.out.println("ê¸°ì¤€ ê±°ë¦¬ : " + all_Dist);
 						//
-						//nearCarArray.add(carArray.get(i));	//±âÁØ°´Ã¼ÀÇ °¡ÁßÄ¡ ¹Ù±ù¿¡ Á¸ÀçÇÏ´Â °´Ã¼ Á¦°ÅÇÔ
+						//nearCarArray.add(carArray.get(i));	//ê¸°ì¤€ê°ì²´ì˜ ê°€ì¤‘ì¹˜ ë°”ê¹¥ì— ì¡´ì¬í•˜ëŠ” ê°ì²´ ì œê±°í•¨
 						boolean overlap_C = true;
 						for(int j=0; j< worth_Node.size(); j++){
-							if(worth_Node.get(j) == s_resultID.get(i)){	//Áßº¹Á¦°Å
+							if(worth_Node.get(j) == s_resultID.get(i)){	//ì¤‘ë³µì œê±°
 								overlap_C = false;
 								break;
 							}
 						}
 						if(overlap_C){
-							worth_Node.add(s_resultID.get(i));	//°è»êÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå	
+							worth_Node.add(s_resultID.get(i));	//ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œ	
 						}
-						//System.out.println("°è»ê ÇÒ °¡Ä¡°¡ ÀÖ´Â  " + s_resultID.get(i));
+						//System.out.println("ê³„ì‚° í•  ê°€ì¹˜ê°€ ìˆëŠ”  " + s_resultID.get(i));
 					}
-					////////////////ÀÌ ºÎºĞ ÀÛµ¿ ¾ÈÇÔ - ÀÚ¸íÇÑ °´Ã¼ Á¦¿Ü ÇÏ´Â ·çÆ¾
-//					if(graph.printQ3(nearCarArray_Temp.get(NUM_OF_SEARCHING-1).getNodeID())-nearCarArray_Temp.get(NUM_OF_SEARCHING-1).get_Car_Dist() > //±âÁØ °´Ã¼ÀÇ ÃÖ´Ü °Å¸® + °¡ÁßÄ¡ 
-//						graph.printQ3(nearCarArray_Temp.get(i).getNodeID())+nearCarArray_Temp.get(i).get_Car_Dist()){	//ÀÚ¸íÇÑ °´Ã¼
+					////////////////ì´ ë¶€ë¶„ ì‘ë™ ì•ˆí•¨ - ìëª…í•œ ê°ì²´ ì œì™¸ í•˜ëŠ” ë£¨í‹´
+//					if(graph.printQ3(nearCarArray_Temp.get(NUM_OF_SEARCHING-1).getNodeID())-nearCarArray_Temp.get(NUM_OF_SEARCHING-1).get_Car_Dist() > //ê¸°ì¤€ ê°ì²´ì˜ ìµœë‹¨ ê±°ë¦¬ + ê°€ì¤‘ì¹˜ 
+//						graph.printQ3(nearCarArray_Temp.get(i).getNodeID())+nearCarArray_Temp.get(i).get_Car_Dist()){	//ìëª…í•œ ê°ì²´
 //						answer_CarArray.add(nearCarArray_Temp.get(i));
 //						System.out.println("@@");
 //					}
 					
 				}
 				
-				//°è»êÇÒ ÇÊ¿ä¾øÀÌ ÀÚ¸íÇÏ°Ô °¡±î¿î °´Ã¼ °ÇÁ® ³»±â
+				//ê³„ì‚°í•  í•„ìš”ì—†ì´ ìëª…í•˜ê²Œ ê°€ê¹Œìš´ ê°ì²´ ê±´ì ¸ ë‚´ê¸°
 				for(int i=0; i< worth_Node.size(); i++){
 					if(all_Dist - carArray.get(NUM_OF_SEARCHING-1).get_Car_Dist() > 
 						graph.printQ3(worth_Node.get(i)) + carArray.get(i).get_Car_Dist()){
 						
 						answer_Node.add(worth_Node.get(i));
-						//System.out.println("ÀÚ¸íÇÏ°Ô °¡±î¿î °´Ã¼ = " + worth_Node.get(i));
+						//System.out.println("ìëª…í•˜ê²Œ ê°€ê¹Œìš´ ê°ì²´ = " + worth_Node.get(i));
 					}
 				}
 				
@@ -468,37 +472,39 @@ class MainView extends JFrame{
 				for(int i=0; i< worth_Node.size(); i++){	
 					boolean overlap_C = true;
 					for(int j=0; j< answer_Node.size(); j++){
-						if(worth_Node.get(i) == answer_Node.get(j)){	//¼ø¼öÇÏ°Ô °è»ê ÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå¸¦ °ÇÁ®³¿
+						if(worth_Node.get(i) == answer_Node.get(j)){	//ìˆœìˆ˜í•˜ê²Œ ê³„ì‚° í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œë¥¼ ê±´ì ¸ëƒ„
 							overlap_C = false;
 							break;
 						}
 					}
 					if(overlap_C){
-						worth_Node_Culcu.add(worth_Node.get(i));	//°è»êÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå	
+						worth_Node_Culcu.add(worth_Node.get(i));	//ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œ	
+						
+						
 					}
 				}
 				
 				
 				for(int i=0; i < worth_Node_Culcu.size(); i++){
-					//System.out.println("°è»êÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå: " +  worth_Node_Culcu.get(i));
+					//System.out.println("ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œ: " +  worth_Node_Culcu.get(i));
 				}
 				
 				for(int i=0; i< answer_Node.size(); i++){
-					System.out.println("ÀÚ¸íÇÏ°Ô °¡±î¿î °´Ã¼: " + answer_Node.get(i));
+					System.out.println("ìëª…í•˜ê²Œ ê°€ê¹Œìš´ ê°ì²´: " + answer_Node.get(i));
 				}
 				
 				
-				//°è»êÇÒ °¡Ä¡°¡ ÀÖ´Â ³ëµå¸¦ ±âÁØÀ¸·Î Àâ´Â´Ù.
+				//ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì¡ëŠ”ë‹¤.
 				for(int i=0; i<worth_Node_Culcu.size(); i++){
-					carNeighborNodeIdArray = graph.getLinkNode(worth_Node_Culcu.get(i));  //Â÷·®ÁÖº¯ ³ëµå
-					carNodeId.add(worth_Node_Culcu.get(i));								//Â÷·® ³ëµå
-					carNeighborNodeId.add(carNeighborNodeIdArray);					//Â÷·®ÀÌ Á¸ÀçÇÏ´Â °÷ÀÇ ÀÎÁ¢ ³ëµåÈ£Ãâ
-					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//Â÷·É ÁÖº¯³ëµå °³¼ö
+					carNeighborNodeIdArray = graph.getLinkNode(worth_Node_Culcu.get(i));  //ì°¨ëŸ‰ì£¼ë³€ ë…¸ë“œ
+					carNodeId.add(worth_Node_Culcu.get(i));								//ì°¨ëŸ‰ ë…¸ë“œ
+					carNeighborNodeId.add(carNeighborNodeIdArray);					//ì°¨ëŸ‰ì´ ì¡´ì¬í•˜ëŠ” ê³³ì˜ ì¸ì ‘ ë…¸ë“œí˜¸ì¶œ
+					neighbor_Car_Path_Stop_Point.add(carNeighborNodeIdArray.size());//ì°¨ë ¹ ì£¼ë³€ë…¸ë“œ ê°œìˆ˜
 					//System.out.println("1 carNodeId.get("+i+") = " + carNodeId.get(i));
 				}				
 				
 				
-				//2¹è¼ö¸¦ ºÒ·¯¿À±â¶§¹®¿¡ Ã£°íÀÚ ÇÏ´Â Â÷·®º¸´Ù 2¹è ÀÌ»ó ¸¹ÀÌ ¼³Á¤ÇØ¾ßÇÏ¸ç ÀÌ°÷¿¡¼­ °¨¸¶ ±âÁØ°ª´ëºñ ÀÚ¸íÇÑ °´Ã¼¸¦ °ñ¶ó³»°í È®·ü À» ºñ±³ÇØ¾ßÇÒ °´Ã¼¸¦ °ñ¶ó³»¾ßÇÑ´Ù.
+				//2ë°°ìˆ˜ë¥¼ ë¶ˆëŸ¬ì˜¤ê¸°ë•Œë¬¸ì— ì°¾ê³ ì í•˜ëŠ” ì°¨ëŸ‰ë³´ë‹¤ 2ë°° ì´ìƒ ë§ì´ ì„¤ì •í•´ì•¼í•˜ë©° ì´ê³³ì—ì„œ ê°ë§ˆ ê¸°ì¤€ê°’ëŒ€ë¹„ ìëª…í•œ ê°ì²´ë¥¼ ê³¨ë¼ë‚´ê³  í™•ë¥  ì„ ë¹„êµí•´ì•¼í•  ê°ì²´ë¥¼ ê³¨ë¼ë‚´ì•¼í•œë‹¤.
 				
 				
 				
@@ -510,7 +516,7 @@ class MainView extends JFrame{
 		//********************************************************************************************************************
 		
 		/**
-		 * ¿ŞÂÊ
+		 * ì™¼ìª½
 		 */
 		left.addActionListener(new ActionListener(){
 
@@ -524,7 +530,7 @@ class MainView extends JFrame{
 		});
 		
 		/**
-		 * ¿À¸¥ÂÊ
+		 * ì˜¤ë¥¸ìª½
 		 */
 		right.addActionListener(new ActionListener(){
 
@@ -537,7 +543,7 @@ class MainView extends JFrame{
 			
 		});
 		/**
-		 * À§
+		 * ìœ„
 		 */
 		up.addActionListener(new ActionListener(){
 
@@ -551,7 +557,7 @@ class MainView extends JFrame{
 		});
 		
 		/**
-		 * ¾Æ·¡
+		 * ì•„ë˜
 		 */
 		down.addActionListener(new ActionListener(){
 
@@ -565,7 +571,7 @@ class MainView extends JFrame{
 		});
 		
 		/**
-		 * ÁÜ ÀÎ
+		 * ì¤Œ ì¸
 		 */
 		zoomIn.addActionListener(new ActionListener(){
 
@@ -579,7 +585,7 @@ class MainView extends JFrame{
 		});
 		
 		/**
-		 * ÁÜ ¾Æ¿ô
+		 * ì¤Œ ì•„ì›ƒ
 		 */
 		zoomOut.addActionListener(new ActionListener(){
 
@@ -595,25 +601,25 @@ class MainView extends JFrame{
 		
 		
 		/**
-		 * ¼­¹ö ¿¬µ¿
+		 * ì„œë²„ ì—°ë™
 		 */
 		serverBackground.setGui(this);
-		serverBackground.setting();		//¼­¹ö¼ÂÆÃ
+		serverBackground.setting();		//ì„œë²„ì…‹íŒ…
 		
 	}
 	
 	/**
-	 * ¼­¹ö·Î ºÎÅÍ Â÷·® ¹Ş¾Æ¿À±â
+	 * ì„œë²„ë¡œ ë¶€í„° ì°¨ëŸ‰ ë°›ì•„ì˜¤ê¸°
 	 */
 	public void addTransportationCar(){
 		/**
-		 * Â÷·®Á¤º¸ »ğÀÔ
+		 * ì°¨ëŸ‰ì •ë³´ ì‚½ì…
 		 */
 		//carArray.clear();
-		//carArray = addMapData.get_Transportation_Car();			//Â÷·®Ãß°¡
+		//carArray = addMapData.get_Transportation_Car();			//ì°¨ëŸ‰ì¶”ê°€
 		
 		carArray = serverBackground.get_Transportation_Car();
-		drawPanel.repaint();	//»õ·Î±×¸®±â
+		drawPanel.repaint();	//ìƒˆë¡œê·¸ë¦¬ê¸°
 	}
 
 	
@@ -622,7 +628,7 @@ class DrawButtonPanel extends JPanel{
 	protected void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
 		//setSize(500,500);
-		setBounds(800, 50, 700, 700); 	//ÆĞ³ÎÀ§Ä¡¹× »çÀÌÁî
+		setBounds(800, 50, 700, 700); 	//íŒ¨ë„ìœ„ì¹˜ë° ì‚¬ì´ì¦ˆ
 		g.setColor(Color.white);
 		g.fillRect(0, 0, 1000, 1000);
 	}
@@ -637,18 +643,18 @@ class DrawPanel extends JPanel {
 		//System.out.println(carArray.size());
 		
 		/**
-		 * È­¸é ÃÊ±âÈ­
+		 * í™”ë©´ ì´ˆê¸°í™”
 		 */
 		//setSize(2500,2500);
 		
-		setBounds(viewPanel_x, viewPanel_y, 3000, 3000); 	//ÆĞ³ÎÀ§Ä¡¹× »çÀÌÁî
+		setBounds(viewPanel_x, viewPanel_y, 3000, 3000); 	//íŒ¨ë„ìœ„ì¹˜ë° ì‚¬ì´ì¦ˆ
 		
 		g.setColor(Color.white);
 		g.fillRect(0, 0, 3000, 3000);
 		
 		
 		 		/**
-		 		 * ³ëµå ±×¸®±â, Á¡
+		 		 * ë…¸ë“œ ê·¸ë¦¬ê¸°, ì 
 		 		 */
 		  			g.setColor(Color.BLACK);
 		  			
@@ -665,7 +671,7 @@ class DrawPanel extends JPanel {
 					
 					
 					/**
-					 * ¿§Áö ±×¸®±â, ¼±
+					 * ì—£ì§€ ê·¸ë¦¬ê¸°, ì„ 
 					 */
 					g.setColor(Color.black);
 					for(int i=0; i<edgeArray.size(); i++){
@@ -683,7 +689,7 @@ class DrawPanel extends JPanel {
 					
 					
 					/**
-					 * ÀÚµ¿Â÷ ±×¸®±â
+					 * ìë™ì°¨ ê·¸ë¦¬ê¸°
 					 */
 					
 					if(!carArray.isEmpty())
@@ -694,7 +700,7 @@ class DrawPanel extends JPanel {
 						g.setColor(Color.RED);
 						for(int i=0; i<carArray.size(); i++){
 							g.fillRect((int)carArray.get(i).getPoint_x()/RATIO -2, (int)carArray.get(i).getPoint_y()/RATIO-2, 25 / RATIO, 25 / RATIO);
-							//System.out.println(i+"·£´ıÂï´Â´Ù");
+							//System.out.println(i+"ëœë¤ì°ëŠ”ë‹¤");
 						}
 						
 						
@@ -704,19 +710,40 @@ class DrawPanel extends JPanel {
 						
 						
 						/**
-						 *  ÀÚµ¿Â÷ ÁÖº¯ ³ëµå Âï±â
+						 *  ìë™ì°¨ ì£¼ë³€ ë…¸ë“œ ì°ê¸°
 						 */
 						if(s_check){
 						g.setColor(Color.yellow);
-						//int neighbor_Car_Path_Stop_Point_For_Start = 0;//ÀÚµ¿Â÷ ½ºÅé Æ÷ÀÎÆ® ¸®½ºÆ®´Â ¿¬°áµÇ±â ‹š¹®¿¡ ¿¬°áºÎºĞÀ» Á¦°Å ÇØÁÖ´Â ÅÛÇÁ º¯¼ö
+						//int neighbor_Car_Path_Stop_Point_For_Start = 0;//ìë™ì°¨ ìŠ¤í†± í¬ì¸íŠ¸ ë¦¬ìŠ¤íŠ¸ëŠ” ì—°ê²°ë˜ê¸° ë–„ë¬¸ì— ì—°ê²°ë¶€ë¶„ì„ ì œê±° í•´ì£¼ëŠ” í…œí”„ ë³€ìˆ˜
 						//worth_Node_Culcu 
 						//answer_Node
 						//for(int i=0; i<NUM_OF_SEARCHING; i++){
+						double standard_Node_Ad = 0;
+						
+						tempG_node_Num = new ArrayList<Integer>();
+						tempG_except_Node = new ArrayList<Integer>();
+						short_Path = new ArrayList<Integer>();
+						
+
+					
+						
+						
+						
+						
+						gama_Value = 0;
+						v_All_Car_Distance = 0;
+						
+						int standard_Node = 0; //ê¸°ì¤€ì´ ë˜ëŠ” ë…¸ë“œ
+//						ArrayList<Car> worth_Car = new ArrayList<Car>();
+						
+						
 						for(int i=0; i<worth_Node_Culcu.size(); i++){
 							
 							carNeighborNodeIdTemp = carNeighborNodeId.get(i);
 							
 							//System.out.println("carNeighborNodeId.get(i) = " + carNeighborNodeId.get(i));
+							
+							
 							
 							
 							for(int j=0; j<carNeighborNodeIdTemp.size(); j++){
@@ -727,11 +754,11 @@ class DrawPanel extends JPanel {
 								
 							}
 							/**
-							 * ÀÚµ¿Â÷ ÁÖº¯ ¿§Áö ±×¸®±â	
+							 * ìë™ì°¨ ì£¼ë³€ ì—£ì§€ ê·¸ë¦¬ê¸°	
 							*/
 							
 							//for(int j=neighbor_Car_Path_Stop_Point_For_Start; j<neighbor_Car_Path_Stop_Point.get(i); j++){
-							double v_Distance = 0;	//¹úÅØ½º ±æÀÌ±¸ÇÏ±â
+							double v_Distance = 0;	//ë²Œí…ìŠ¤ ê¸¸ì´êµ¬í•˜ê¸°
 							double v_Xtemp = 0;
 							double v_Ytemp = 0;
 							double v_Distance_Part = 0;
@@ -739,8 +766,9 @@ class DrawPanel extends JPanel {
 							
 							
 							
-							//°¨¸¶°ª ±¸ÇÏ±â À§ÇØ¼­ ad ¸¦ gdÇÔ¼ö·Î º¯°æÇÔ
-							double st_Lanth = graph.printQ3(nodeArray.get(carNodeId.get(i)).getNodeID()); //Á÷¼±°Å¸®
+							//ê°ë§ˆê°’ êµ¬í•˜ê¸° ìœ„í•´ì„œ ad ë¥¼ gdí•¨ìˆ˜ë¡œ ë³€ê²½í•¨
+							double st_Lanth = graph.printQ3(nodeArray.get(carNodeId.get(i)).getNodeID()); //ì§ì„ ê±°ë¦¬
+							
 							double input_Gama_Temp = 1;
 							if(all_Dist - st_Lanth > carArray.get(i).get_Car_Dist()){
 								input_Gama_Temp = carArray.get(i).get_Car_Dist();
@@ -749,14 +777,22 @@ class DrawPanel extends JPanel {
 							}
 							
 							
+							v_All_Car_Distance = 0;
+							
+							System.out.println("ë¹„êµëŒ€ìƒ ë…¸ë“œ " + worth_Node_Culcu.get(i) + "ê¹Œì§€ì˜ ê±°ë¦¬ = " + st_Lanth + ", ê¸°ì¤€ ë…¸ë“œ ê±°ë¦¬ : " + all_Dist);
+							System.out.println(worth_Node_Culcu.get(i) + " ë…¸ë“œì˜ ");
+							
+							//ê³„ì‚°í•  ê¼­ì§€ì  ë…¸ë“œ
+//							calcurertex.clear();
+//							calcurertex_Langth.clear();
 							
 							for(int j=0; j<neighbor_Car_Path_Stop_Point.get(i); j++){
 							
-							g.drawLine(
-									(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO, 
-									(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO, 
-									(int)nodeArray.get(carNodeId.get(i)).getNormalizedX()/RATIO, 
-									(int)nodeArray.get(carNodeId.get(i)).getNormalizedY()/RATIO);
+//							g.drawLine(
+//									(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO, 
+//									(int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO, 
+//									(int)nodeArray.get(carNodeId.get(i)).getNormalizedX()/RATIO, 
+//									(int)nodeArray.get(carNodeId.get(i)).getNormalizedY()/RATIO);
 							
 							v_Xtemp = (int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedX()/RATIO - (int)nodeArray.get(carNodeId.get(i)).getNormalizedX()/RATIO;
 							v_Ytemp = (int)nodeArray.get(carNeighborNodeIdTemp.get(j)).getNormalizedY()/RATIO - (int)nodeArray.get(carNodeId.get(i)).getNormalizedY()/RATIO;
@@ -764,27 +800,21 @@ class DrawPanel extends JPanel {
 							v_Ytemp = Math.pow(v_Ytemp, 2);
 							
 							/**
-							 * v_Xtemp + v_Ytemp °ªÀÌ ÃÖ´ë °¡ÁßÄ¡ °Å¸®(º£Å¸°ª)º¸´Ù Àû´Ù¸é ÇÔ¼öÈ£ÃâÇÏ·Î °¡¾ßÇÔ - ´Ù¸¥ ¿¬°áµÈ ³ëµå¸¦ Ã£¾Æ¼­
+							 * v_Xtemp + v_Ytemp ê°’ì´ ìµœëŒ€ ê°€ì¤‘ì¹˜ ê±°ë¦¬(ë² íƒ€ê°’)ë³´ë‹¤ ì ë‹¤ë©´ í•¨ìˆ˜í˜¸ì¶œí•˜ë¡œ ê°€ì•¼í•¨ - ë‹¤ë¥¸ ì—°ê²°ëœ ë…¸ë“œë¥¼ ì°¾ì•„ì„œ
 							 */
 							
 							v_Distance_Part = Math.sqrt(v_Xtemp + v_Ytemp);
 							
 							
 							/**
-							 * Â÷·®ÀÇ °¨¸¶°ª°ú ±¸ÇÏ±â °è»ê¿¡ »ç¿ëµÉ °Í µé
+							 * ì°¨ëŸ‰ì˜ ê°ë§ˆê°’ê³¼ êµ¬í•˜ê¸° ê³„ì‚°ì— ì‚¬ìš©ë  ê²ƒ ë“¤
 							 */
-								tempG_node_Num = new ArrayList<Integer>();
-								tempG_except_Node = new ArrayList<Integer>();
-								short_Path = new ArrayList<Integer>();
-								
-								//ÀÏ´Ü °Å¸® 50À» ±âÁØÀ¸·Î °è»êÇÔ ÃßÈÄ ÀÚµ¿Â÷ÀÇ ¼Ó·Â°ú Åë½Å½Ã°£À» °í·ÁÇØ¼­ °è»ê ÇØ¾ßÇÔ
-								
-//								v_All_Car_Distance = Ad(
-//										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
-//										nodeArray.get(carNodeId.get(i)).getNodeID(), 
-//										carArray.get(i).get_Car_Dist(), 
-//										carNodeId.get(i), i);
-								
+							
+							//ê°ì²´ì˜ ê°ë§ˆê°’ ê¼­ì§€ì  êµ¬í•˜ê¸°
+//							vertexG.clear();
+//							second_vertexG.clear();
+							
+							
 								v_All_Car_Distance = Ad(
 										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
 										worth_Node_Culcu.get(i), 
@@ -792,64 +822,285 @@ class DrawPanel extends JPanel {
 										carNodeId.get(i), i);
 								
 								
-								tempG_node_Num = new ArrayList<Integer>();
-								tempG_except_Node = new ArrayList<Integer>();
-								short_Path = new ArrayList<Integer>();
 								
-							
+								
+								
+								
+								//ê¸°ì¤€ê°’ ë…¸ë“œì˜ ì „ì²´ ê±°ë¦¬ êµ¬í•˜ê¸°
+								if(i+answer_Node.size() == NUM_OF_SEARCHING-1){
+									//System.out.println("ê¸°ì¤€ ë…¸ë“œ " + carNodeId.get(i));
+									standard_Node_Ad = v_All_Car_Distance;
+									standard_Node = i;
+								}
+								
+//								System.out.print(worth_Node_Culcu.get(i) + " ë…¸ë“œì˜ ê¼­ì§€ì  ë…¸ë“œ :");
+//								for(int k=0; k<vertexG.size();k++)
+//								{
+//									System.out.print(vertexG.get(k) + ", ");
+//								}
+//								System.out.println();
+								
+								
+								tempG_node_Num.clear();
+								tempG_except_Node.clear();
+								short_Path.clear();
+//								
+								//ê¼­ì§€ì  ë…¸ë“œì—ì„œ ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ë…¸ë“œ ë¶„ë³„
+								
+								//System.out.print(worth_Node_Culcu.get(i) + " ë…¸ë“œì˜ ê¼­ì§€ì  ë…¸ë“œ :");
+								
+								//ë¹„êµëŒ€ìƒ ë…¸ë“œ a ê¹Œì§€ì˜ ìµœë‹¨ê±°ë¦¬, ê¸°ì¤€ ë…¸ë“œì˜ ê±°ë¦¬			all_Dist
+//								System.out.println("ë¹„êµëŒ€ìƒ ë…¸ë“œ " + worth_Node_Culcu.get(i) + "ê¹Œì§€ì˜ ê±°ë¦¬ = " + st_Lanth + ", ê¸°ì¤€ ë…¸ë“œ ê±°ë¦¬ : " + all_Dist);
+								
+//								for(int k=0; k<vertexG.size();k++)
+//								{
+//									//System.out.print(vertexG.get(k) + ", ");
+//									//(a, a1 ì˜ ìµœë‹¨ê±°ë¦¬)
+//									graph.dijkstra(vertexG.get(k));
+//									double dist_fq = graph.printQ3(QUERYPOINT);
+//									double dist_sq = graph.printQ3(worth_Node_Culcu.get(i));
+//									double dist_tq = carArray.get(i).get_Car_Dist();
+//									//System.out.println("dist_fq = " + dist_fq + ", dist_sq = " + dist_sq + ", dist_tq = " + dist_tq + ", dist_fq - ((dist_sq)-(dist_tq)) = " + (dist_fq - ((dist_sq)-(dist_tq))));
+//									
+//									
+//									
+//									if(dist_fq - ((dist_sq)-(dist_tq)) <= all_Dist){
+//										//System.out.println("ê³„ì‚°í•  ê¼­ì§€ì  ë…¸ë“œ : " + vertexG.get(k));
+//										calcurertex.add(vertexG.get(k)); 
+//										calcurertex_Langth.add(dist_fq);
+//									}
+//									//System.out.println(worth_Node_Culcu.get(i) + " ë…¸ë“œì™€ " + vertexG.get(k) + " ë…¸ë“œì˜ ê±°ë¦¬ : " + dist_sq + ", ì¿¼ë¦¬ ê¹Œì§€ì˜ ê±°ë¦¬ : " + dist_fq);
+//								}
+								
+								
+								
 //								Gd(
-//										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
-//										nodeArray.get(carNodeId.get(i)).getNodeID(), 
+//										nodeArray.get(
+//												
+//										nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
+//										
+//										worth_Node_Culcu.get(i), 
+//										
 //										input_Gama_Temp
 //										);
-								Gd(
-										nodeArray.get(nodeArray.get(carNeighborNodeIdTemp.get(j)).getNodeID()).getNodeID(), 
-										worth_Node_Culcu.get(i), 
-										input_Gama_Temp
-										);
-								
-							}	
 								
 								
+								
+							
+								
+							}
+							
+							//System.out.println("ë¹„êµëŒ€ìƒ ë…¸ë“œ " + worth_Node_Culcu.get(i) + "ê¹Œì§€ì˜ ê±°ë¦¬ = " + st_Lanth + ", ê¸°ì¤€ ë…¸ë“œ ê±°ë¦¬ : " + all_Dist);
+							
+//							for(int j=0; j<calcurertex.size();j++){
+//								
+//								
+//								
+//								System.out.println("ê³„ì‚°í•  ê¼­ì§€ì  ë…¸ë“œ = " + calcurertex.get(j) + " ê¹Œì§€ì˜ ê±°ë¦¬ = " + calcurertex_Langth.get(j));
+//								
+//								
+//							}
+//							
+//							//adí•¨ìˆ˜ë¥¼ ë“¤ë¦° ëª¨ë“  ë…¸ë“œ
+//							System.out.print("ë“¤ë¦° ëª¨ë“  ë…¸ë“œ : ");
+//							for(int j=0; j<adAllvertex.size(); j++){
+//								System.out.print(adAllvertex.get(j) + ", ");
+//							}
+//							//ADí•¨ìˆ˜ì—ì„œ ê±°ì¹œ ëª¨ë“  ë…¸ë“œì˜ ì§‘í•©
+//							adAllvertex.clear();
+//							
+//							System.out.println();
+//							System.out.println();
+							
+							
+							
+							//System.out.println(" ê°ë§ˆê°’ : " + gama_Value);
+							
+//							if((input_Gama_Temp < 0)){
+//								gama_Value += input_Gama_Temp;
+//							}
+							
+							
+							//ê¸°ì¤€ ê±°ë¦¬ë³´ë‹¤ ê°€ê¹Œìš´ ê³³ì— ì¡´ì¬í•˜ëŠ” ê°ì²´ëŠ” -weight ë¥¼ í•´ì¤€ë‹¤.
+//							if(all_Dist >= st_Lanth){
+//								gama_Value -= carArray.get(i).get_Car_Dist();
+//							}
+							
+							graph.dijkstra(userQ.getNodeID());
+							double nObject_dist = graph.printQ3(nodeArray.get(worth_Node_Culcu.get(i)).getNodeID());
 							//neighbor_Car_Path_Stop_Point_For_Start = neighbor_Car_Path_Stop_Point.get(i);
-							System.out.print(nodeArray.get(carNodeId.get(i)).getNodeID() + " ¹øÂ° Â÷ ÀÇ ÃÑ ÀÌµ¿ °Å¸®(Ad()) = " + v_All_Car_Distance + 
-									", Á÷¼±°Å¸® = " + graph.printQ3(nodeArray.get(carNodeId.get(i)).getNodeID()));
+							System.out.println(nodeArray.get(worth_Node_Culcu.get(i)).getNodeID() + " ë²ˆì§¸ ì°¨ ì˜ ì´ ì´ë™ ê±°ë¦¬(Ad()) = " + v_All_Car_Distance + 
+									", ì§ì„ ê±°ë¦¬ = " + nObject_dist);
 							
-//							System.out.print(worth_Node_Culcu.get(i) + " ¹øÂ° Â÷ ÀÇ ÃÑ ÀÌµ¿ °Å¸®(Ad()) = " + v_All_Car_Distance + 
-//									", Á÷¼±°Å¸® = " + graph.printQ3(worth_Node_Culcu.get(i)));
-						   
-							//Áßº¹µÈ °¨¸¶°ª Á¦°Å
-							if(gama_Value > v_All_Car_Distance){
-								gama_Value = v_All_Car_Distance; //
-							}
-							
-							System.out.println(", °¨¸¶°ª : " + (gama_Value-input_Gama_Temp));
 						
-							/**
-							 * È®·ü ¿¬»ê 
-							 */
 							
-							//(a)ÀÇ °æ¿ì Query ÁöÁ¡À¸·Î ºÎÅÍ n¹øÂ° °´Ã¼ÀÇ ÃÖÀå°Å¸®°¡ ±âÁØ °´Ã¼ÀÇ ÃÖÀå°Å¸®º¸´Ù ÀÛÀ¸¸é¼­ ÃÖ´Ü °Å¸®´Â °¡±î¿î °æ¿ì
-							if(){
-								
+							System.out.println("ê°ë§ˆê°’ : " + gama_Value);
+							gama_Value = 0;
 							
-							//(b) Query ÁöÁ¡À¸·ÎºÎÅÍ ±âÁØ °´Ã¼ÀÇ ÃÖ´Ü°Å¸®°¡ n¹øÂ° °´Ã¼ÀÇ ÃÖ´Ü °Å¸®º¸´Ù Å©¸é¼­ ÃÖÀå°Å¸®´Â ÂªÀº °æ¿ì.
-							}else if(){
-								
-								
-							//(c) Query ÁöÁ¡À¸·ÎºÎÅÍ ±âÁØ °´Ã¼ÀÇ ÃÖ´Ü°Å¸®°¡ n¹øÂ° °´Ã¼ÀÇ ÃÖ´Ü°Å¸®º¸´Ù ÂªÀ¸¸é¼­ ÃÖÀå °Å¸®´Â Å« °æ¿ì.
-							}else{
-								
+//							System.out.print(worth_Node_Culcu.get(i) + " ë²ˆì§¸ ì°¨ ì˜ ì´ ì´ë™ ê±°ë¦¬(Ad()) = " + v_All_Car_Distance + 
+//									", ì§ì„ ê±°ë¦¬ = " + graph.printQ3(worth_Node_Culcu.get(i)));
+						   
+							//ì¤‘ë³µëœ ê°ë§ˆê°’ ì œê±°
+//							if(gama_Value > v_All_Car_Distance){
+//								gama_Value = v_All_Car_Distance; //
+//							}
+//							gama_Value = gama_Value-input_Gama_Temp;
+							
+//							gama_Value = 0;
+							
+							//ì§ì„ ê±°ë¦¬ë„ í•´ì•¼í•¨
+							//carArray.get(i).set_Ad(v_All_Car_Distance);			//ì´ì´ë™ê±°ë¦¬
+							//carArray.get(i).set_Gama(gama_Value);				//ê°ë§ˆê°’
+							//carArray.get(i).set_Dist_Direct(nObject_dist);		//ì§ì„ ê±°ë¦¬
+							
+							Car carT = new Car(0);
+//							carT.set_Car_Id(worth_Node_Culcu.get(i));
+//							carT.setNodeID(nodeArray.get(carNodeId.get(i)).getNodeID());
+//							carT.set_Ad(v_All_Car_Distance);
+//							carT.set_Gama(gama_Value);
+//							carT.set_Dist_Direct(nObject_dist);
+//							carT.set_Car_Dist(carArray.get(i).get_Car_Dist());
+//							
+//							System.out.println(worth_Node_Culcu.get(i));
+							
+							for(int j=0; j<carArray.size();j++){
+								if(worth_Node_Culcu.get(i) == carArray.get(j).getNodeID()){
+									carT = carArray.get(j);
+									
+									carT.set_Ad(v_All_Car_Distance);
+									carT.set_Gama(gama_Value);
+									carT.set_Dist_Direct(nObject_dist);
+									
+									break;
+								}
 							}
+//							
+							worth_Car.add(carT);	//ê³„ì‚°í•  ê°€ì¹˜ê°€ ìˆëŠ” ìë™ì°¨
+//							for(int j=0; j<worth_Car.size();j++){
+//								System.out.println("worth_Car : " + worth_Car.get(j).get_Dist_Direct());
+//							}
+							//ê¸°ì¤€ì´ ë˜ëŠ” ë…¸ë“œ ê°ë§ˆ ê°€ì§„ê°’ì„ ê°€ì§€ê³  ì—°ì‚° ë°‘ì— í¬ë¬¸
+						
+							
+							//ê°ë§ˆ ê¸°ì¤€ê°’ ë…¸ë“œì˜ ê°ˆ ìˆ˜ ìˆëŠ” ëª¨ë“  ê±°ë¦¬ì˜ í•©
+							
+							//System.out.println("ê¸°ì¤€ê°’ ë…¸ë“œì˜ ëª¨ë“  ê±°ë¦¬ì˜ í•© : " +  standard_Node_Ad);
+							
+							//ê°ë§ˆ ê¸°ì¤€ê°’ : all_Dist, ê°ë§ˆ ê¸°ì¤€ ë…¸ë“œ s_resultID.get((NUM_OF_SEARCHING)-1)
+//							int standard_Node = 0;
+							
+//							for(int j=0; j<carArray.size(); j++){
+//								if(carArray.get(j).get_Car_Id() == s_resultID.get((NUM_OF_SEARCHING)-1)){	//ê¸°ì¤€ì´ ë˜ëŠ” ìë™ì°¨ë¥¼ ê°€ì ¸ì˜¤ê¸° ìœ„í•´ì„œ
+//									standard_Node = j;
+//									break;
+//								}
+//							}
+//							
+							
 							
 							
 							gama_Value = 0;
-							
-							
 						}	
 					
 						
+						/**
+						 * í™•ë¥  ì—°ì‚°
+						 */
+						//System.out.println("ê¸°ì¤€ ë…¸ë“œì˜ ì „ì²´ ê±°ë¦¬ : " + standard_Node_Ad);
+//						System.out.println("ê¸°ì¤€ ë…¸ë“œ :" + carArray.get(standard_Node).get_Car_Id());
+//						for(int i=0; i<worth_Car.size();i++){
+//							System.out.println("ëŒ€ì¡° ë…¸ë“œ :" + worth_Car.get(i).get_Car_Id());
+//						}
 						
+						
+						
+						for(int i=0; i<worth_Car.size();i++){
+							
+							double probability_n = 0;
+							double probability_n_1 = 0;
+							
+							//System.out.println(worth_Car.get(i).getNodeID());
+							
+							//(a)ì˜ ê²½ìš° Query ì§€ì ìœ¼ë¡œ ë¶€í„° ê¸°ì¤€ê°ì²´ì˜ ìµœë‹¨ ê±°ë¦¬ê°€ në²ˆì§¸ ê°ì²´ì˜ ìµœë‹¨ê±°ë¦¬ë³´ë‹¤ ì§§ê³  ìµœì¥ê±°ë¦¬ë„ ì§§ì„ë•Œ
+							if(all_Dist - worth_Car.get(standard_Node).get_Car_Dist() <= worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist() &&
+									all_Dist + worth_Car.get(standard_Node).get_Car_Dist() <= worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()){
+								System.out.println("!");
+								//	private double alpa(double all_Dist, double nObject_dist, double all_Dist_w, double nObject_dist_w){
+								
+								probability_n = ((carArray.get(standard_Node).get_Car_Dist()*2) - ((alpa(
+										
+										all_Dist - carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist(),
+										all_Dist + carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()
+										
+										))/2)) / (worth_Car.get(standard_Node).get_Ad() - worth_Car.get(standard_Node).get_Gama());
+								
+								probability_n_1 = ((alpa(	
+										
+										all_Dist - carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist(),
+										all_Dist + carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()
+										
+										))/2) / (worth_Car.get(i).get_Ad() - worth_Car.get(i).get_Gama());
+								
+//								System.out.println( (worth_Car.get(i).get_Ad() - worth_Car.get(i).get_Gama()));
+								
+								System.out.println(worth_Car.get(standard_Node).getNodeID() + " ì°¨ëŸ‰ì´ ê°€ê¹Œìš¸ í™•ë¥  = " + probability_n + ", " 
+								+ worth_Car.get(i).getNodeID() + " ì°¨ëŸ‰ì´ ê°€ê¹Œìš¸ í™•ë¥  = " + probability_n_1);
+								
+								
+							//(b) Query ì§€ì ìœ¼ë¡œë¶€í„° ê¸°ì¤€ê°ì²´ì˜ ìµœë‹¨ ê±°ë¦¬ê°€ në²ˆì§¸ ê°ì²´ì˜ ìµœë‹¨ê±°ë¦¬ë³´ë‹¤ ì§§ê³  ìµœëŒ€ê±°ë¦¬ëŠ” ê¸¸ë•Œ
+							}else if(all_Dist - worth_Car.get(standard_Node).get_Car_Dist() <= worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist() &&
+									all_Dist + worth_Car.get(standard_Node).get_Car_Dist() >= worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()){
+								
+								
+								
+							//(c) Query ì§€ì ìœ¼ë¡œë¶€í„° ê¸°ì¤€ê°ì²´ì˜ ìµœë‹¨ ê±°ë¦¬ëŠ” në²ˆì¨° ê°ì²´ì˜ ìµœë‹¨ê±°ë¦¬ë³´ë‹¤ ê¸¸ê³  ìµœì¥ ê±°ë¦¬ëŠ” ì§§ì„ë•Œ
+							}else if(all_Dist - worth_Car.get(standard_Node).get_Car_Dist() >=  worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist() &&
+									 all_Dist + worth_Car.get(standard_Node).get_Car_Dist() <= worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()){ 
+								
+							
+								
+							//(a)ì˜ ë°˜ëŒ€ì˜ ê²½ìš°
+							}else if(all_Dist - worth_Car.get(standard_Node).get_Car_Dist() >= worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist() &&
+								   	 all_Dist + worth_Car.get(standard_Node).get_Car_Dist() >= worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()){ 
+							
+								System.out.println("@");
+								
+								probability_n_1 = ((carArray.get(standard_Node).get_Car_Dist()*2) - ((alpa(
+										
+										all_Dist - carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist(),
+										all_Dist + carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()
+										
+										))/2)) / (worth_Car.get(standard_Node).get_Ad() - worth_Car.get(standard_Node).get_Gama());
+								
+								probability_n = ((alpa(	
+										
+										all_Dist - carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() - worth_Car.get(i).get_Car_Dist(),
+										all_Dist + carArray.get(standard_Node).get_Car_Dist(),
+										worth_Car.get(i).get_Dist_Direct() + worth_Car.get(i).get_Car_Dist()
+										
+										))/2) / (worth_Car.get(i).get_Ad() - worth_Car.get(i).get_Gama());
+								
+//								System.out.println( (worth_Car.get(i).get_Ad() - worth_Car.get(i).get_Gama()));
+								
+								System.out.println(worth_Car.get(standard_Node).getNodeID() + " ì°¨ëŸ‰ì´ ê°€ê¹Œìš¸ í™•ë¥  = " + probability_n + ", " 
+										+ worth_Car.get(i).getNodeID() + " ì°¨ëŸ‰ì´ ê°€ê¹Œìš¸ í™•ë¥  = " + probability_n_1);								
+								
+								
+							
+							}else {
+								System.out.println("ì´ê±´ ë­” ê²½ìš°? ã…‹");
+							}
+							
+							
+						}
+						worth_Car.clear();
 					
 						
 						
@@ -857,14 +1108,14 @@ class DrawPanel extends JPanel {
 						
 						} 	
 						/**
-						 * Äõ¸® À§Ä¡ ±×¸®±â 
+						 * ì¿¼ë¦¬ ìœ„ì¹˜ ê·¸ë¦¬ê¸° 
 						 */
 						g.setColor(Color.BLUE);
 						g.fillRect((int)userQ.getNormalizedX()/RATIO -2, (int)userQ.getNormalizedY()/RATIO-2, 40 / RATIO, 40 / RATIO);
 						
 						
 						/**
-						 * Äõ¸® À§Ä¡·ÎºÎÅÍ ÃÖ´Ü °Å¸® °Ë»öÇÏ´Â ¹üÀ§
+						 * ì¿¼ë¦¬ ìœ„ì¹˜ë¡œë¶€í„° ìµœë‹¨ ê±°ë¦¬ ê²€ìƒ‰í•˜ëŠ” ë²”ìœ„
 						 */
 						//userQ_Max_Dist
 						g.drawOval(
@@ -878,7 +1129,7 @@ class DrawPanel extends JPanel {
 					//********************************************************************************************************************
 					
 					/**
-					 * ÃÖ´Ü °Å¸® ÀÚµ¿Â÷Ç¥½Ã
+					 * ìµœë‹¨ ê±°ë¦¬ ìë™ì°¨í‘œì‹œ
 					 */
 					if(s_check)
 					{
@@ -887,7 +1138,7 @@ class DrawPanel extends JPanel {
 						{
 							for(int j=0; j<NUM_OF_SEARCHING;j++)
 							{
-								if(carArray.get(i).getNodeID() == s_resultID.get(j)){	//ÃÖ´Ü °Å¸®ÀÎ ÀÚµ¿Â÷
+								if(carArray.get(i).getNodeID() == s_resultID.get(j)){	//ìµœë‹¨ ê±°ë¦¬ì¸ ìë™ì°¨
 									g.drawRect((int)carArray.get(i).getPoint_x()/RATIO -4,
 											(int)carArray.get(i).getPoint_y()/RATIO-4, 40 / RATIO, 40 / RATIO);
 								
@@ -898,7 +1149,7 @@ class DrawPanel extends JPanel {
 									
 									
 									
-									//System.out.println("ÃÖ´Ü °Å¸® ³ëµå = " + carArray.get(i).getNodeID());
+									//System.out.println("ìµœë‹¨ ê±°ë¦¬ ë…¸ë“œ = " + carArray.get(i).getNodeID());
 									
 									
 								}
@@ -908,7 +1159,7 @@ class DrawPanel extends JPanel {
 						}
 						
 						/**
-						 * ÃÖ´Ü °Å¸® ÆĞ½º ±×¸®±â
+						 * ìµœë‹¨ ê±°ë¦¬ íŒ¨ìŠ¤ ê·¸ë¦¬ê¸°
 						 */
 						ArrayList<Integer> pathEdge = new ArrayList<Integer>();
 						
@@ -927,7 +1178,7 @@ class DrawPanel extends JPanel {
 								
 								
 								/**
-								 * Á÷¼±À¸·Î ±×·ÁÁö´Â ¶óÀÎ Á¦°Å
+								 * ì§ì„ ìœ¼ë¡œ ê·¸ë ¤ì§€ëŠ” ë¼ì¸ ì œê±°
 								 */
 								boolean drawLineBoolean = true;
 								for(int k=0; k<NUM_OF_SEARCHING; k++){
@@ -949,15 +1200,15 @@ class DrawPanel extends JPanel {
 						}
 						
 						/*
-						// °¨¸¶ °ª Ã£±â
-						System.out.println("Â÷·® ÁÖº¯ ³ëµå");
+						// ê°ë§ˆ ê°’ ì°¾ê¸°
+						System.out.println("ì°¨ëŸ‰ ì£¼ë³€ ë…¸ë“œ");
 						for(int j=0; j<temp_Array_Gama_Node_Candidate.size(); j++){
 							System.out.print(temp_Array_Gama_Node_Candidate.get(j) + " -> ");
-							//Â÷·® ÁÖº¯ ³ëµå¿¡¼­ q±îÁö ÃÖ´Ü °Å¸® ±¸ÇÏ±â
+							//ì°¨ëŸ‰ ì£¼ë³€ ë…¸ë“œì—ì„œ qê¹Œì§€ ìµœë‹¨ ê±°ë¦¬ êµ¬í•˜ê¸°
 							
 						}
 						System.out.println();
-						System.out.println("ÃÖ´Ü ÆĞ½º");
+						System.out.println("ìµœë‹¨ íŒ¨ìŠ¤");
 						temp_Array_Gama_Node_Candidate.clear();
 						
 						for(int j=0; j<shortest_Car_Path.size(); j++){
@@ -965,14 +1216,14 @@ class DrawPanel extends JPanel {
 						}
 						*/
 					
-						//°¨¸¶°ªÀ» Ã£°íÀÚ ÇÏ´Â Â÷·® ÁÖº¯³ëµå¿Í ÃÖ´ÜÆĞ½º ¸®½ºÆ®¿¡¼­ °°Àº °ªÀ» ÃßÃâÇÑ´Ù.
+						//ê°ë§ˆê°’ì„ ì°¾ê³ ì í•˜ëŠ” ì°¨ëŸ‰ ì£¼ë³€ë…¸ë“œì™€ ìµœë‹¨íŒ¨ìŠ¤ ë¦¬ìŠ¤íŠ¸ì—ì„œ ê°™ì€ ê°’ì„ ì¶”ì¶œí•œë‹¤.
 						
 						
 					}
 					//********************************************************************************************************************
 					
 					/**
-					 * ³ëµå ¹øÈ£ Âï¾îÁÖ±â
+					 * ë…¸ë“œ ë²ˆí˜¸ ì°ì–´ì£¼ê¸°
 					 */
 					font = new Font("Serif", Font.BOLD, 100/RATIO);
 		  			g.setFont(font);
@@ -988,34 +1239,109 @@ class DrawPanel extends JPanel {
 					
 	}
 
+
+	
+	private double alpa(double all_Dist, double nObject_dist, double all_Dist_w, double nObject_dist_w){
+		
+		ArrayList<Double> temp = new ArrayList<Double>();
+		temp.add(all_Dist);
+		temp.add(nObject_dist);
+		temp.add(all_Dist_w);
+		temp.add(nObject_dist_w);
+		
+		//System.out.println(all_Dist + ", " + nObject_dist + ", " + all_Dist_w + ", " + nObject_dist_w);
+		
+	    Collections.sort(temp);
+
+	    //System.out.println(temp.get(0) + ", " + temp.get(1) + ", " + temp.get(2) + ", " + temp.get(3));
+	    
+	   double temp_d = temp.get(2) - temp.get(1);
+		
+		temp.clear();
+		return  temp_d;
+	}
+	
+//	private double alpa(double all_Dist, double nObject_dist, double all_Dist_w, double nObject_dist_w) {	//
+//		// TODO Auto-generated method stub
+//		
+//		System.out.println(all_Dist_w + " " + nObject_dist_w);
+//		
+//		double big = all_Dist;  		//+ ê¸°ì¤€ê°’ì˜ ê°€ì¤‘ì¹˜ 
+//		double small = nObject_dist;	//- ëŒ€ì¡°ê°’ì˜ ê°€ì¤‘ì¹˜
+//		
+//		
+//		
+//		if(big < small){	//ë’¤ë°”ë€”ë•Œ
+//			big = nObject_dist + all_Dist_w;
+//			small = all_Dist - nObject_dist_w;
+//		}else {				//ì•„ë‹ë•Œ
+//			big -= all_Dist_w;		
+//			small += nObject_dist_w;
+//		}
+//		
+////		small+=130;		//130 ë°”ê¿”ì¤˜ì•¼í•¨.	 ê¸°ì¤€ê°’ì˜ ê°€ì¤‘ì¹˜
+////		big -= 130;
+//																					//7085ì˜ ë””ìŠ¤íŠ¸ë¥¼ ë³€ê²½ í•´ ë³¸ë‹¤.
+//		//System.out.println("small - big : " + (small - big));
+//		return small - big;
+//		//return big - small;
+//	}
+	
+
+	private double kMax(double get_Car_Dist) {
+		// TODO Auto-generated method stub
+		get_Car_Dist *= 2;
+		return get_Car_Dist;
+	}
+	
+	
+	
+
 }
 /**
- * Â÷·®ÀÌ °¥ ¼ö ÀÖ´Â ¸ğµç °Å¸® ±¸ÇÏ±â Àç±ÍÇÔ¼ö È£Ãâ
+ * ì°¨ëŸ‰ì´ ê°ˆ ìˆ˜ ìˆëŠ” ëª¨ë“  ê±°ë¦¬ êµ¬í•˜ê¸° ì¬ê·€í•¨ìˆ˜ í˜¸ì¶œ
  */
 //Ad(carNeighborNodeIdTemp.get(j), carNodeId.get(i), v_Distance_Part);
 double v_All_Car_Distance = 0;	
-double gama_Value = 0;	//Â÷·® °´Ã¼ÀÇ °¨¸¶°ª
+double gama_Value = 0;	//ì°¨ëŸ‰ ê°ì²´ì˜ ê°ë§ˆê°’
 double gama_Temp = 0;	
-//ArrayList<Integer> temp_Array_Gama_Node_Candidate = new ArrayList<>();	//°¨¸¶°ªÀ» ¾Ë¾Æ¿À±â À§ÇØ Â÷·®ÀÌ °¥ ¼öÀÖ´Â ¸ğµç ³ëµå¸¦ ´ã´Â´Ù.
+//ArrayList<Integer> temp_Array_Gama_Node_Candidate = new ArrayList<>();	//ê°ë§ˆê°’ì„ ì•Œì•„ì˜¤ê¸° ìœ„í•´ ì°¨ëŸ‰ì´ ê°ˆ ìˆ˜ìˆëŠ” ëª¨ë“  ë…¸ë“œë¥¼ ë‹´ëŠ”ë‹¤.
 //ArrayList<ArrayList<Integer>> temp_Gama_Node_Check = new ArrayList<ArrayList<Integer>>();
 
 ArrayList<Integer> tempG_node_Num;
 ArrayList<Integer> tempG_except_Node;
 ArrayList<Integer> short_Path;
 
-public double Ad(int node_Num, int except_Node, double distance ,int car_num, int car_array_num){ //ÁÖÀ§ ³ëµå ¾Ë¾Æ¿À°í °ªÀ» ´õÇØÁØ´Ù. , Á¦¿Ü ÇÒ ³ëµå, ³²Àº °Å¸®, Â÷·® ³Ñ¹ö
+//ê°ë§ˆê°’ ê¼­ì§€ì  êµ¬í•˜ê¸°
+ArrayList<Integer> vertexG= new ArrayList<Integer>(); 
+
+////ê°ë§ˆê°’ second ê¼­ì§€ì  êµ¬í•˜ê¸°
+//ArrayList<Integer> second_vertexG= new ArrayList<Integer>(); 
+//
+////ADí•¨ìˆ˜ì—ì„œ ê±°ì¹œ ëª¨ë“  ë…¸ë“œì˜ ì§‘í•©
+//ArrayList<Integer> adAllvertex= new ArrayList<Integer>(); 
+////ê³„ì‚°í•  ê¼­ì§€ì  ë…¸ë“œ
+//ArrayList<Integer> calcurertex= new ArrayList<Integer>(); 
+////ê³„ì‚°í•  ê¼­ì§€ì  ë…¸ë“œê¹Œì§€ì˜ ê±°ë¦¬
+//ArrayList<Double> calcurertex_Langth= new ArrayList<Double>(); 
+
+
+
+public double Ad(int node_Num, int except_Node, double distance ,int car_num, int car_array_num){ //ì£¼ìœ„ ë…¸ë“œ ì•Œì•„ì˜¤ê³  ê°’ì„ ë”í•´ì¤€ë‹¤. , ì œì™¸ í•  ë…¸ë“œ, ë‚¨ì€ ê±°ë¦¬, ì°¨ëŸ‰ ë„˜ë²„
 	
+//	
+//	adAllvertex.add(node_Num);
 	
 	
 	graph.dijkstra(userQ.getNodeID());
 	
 	
-	gama_Temp = graph.printQ3(node_Num); //all_Dist = k¹øÂ° °´Ã¼¿Í qÀÇ ÃÖ´Ü °Å¸®, gama_Temp = Çö °´Ã¼¿Í qÀÇ ÃÖ´Ü °Å¸®
+	gama_Temp = graph.printQ3(node_Num); //all_Dist = kë²ˆì§¸ ê°ì²´ì™€ qì˜ ìµœë‹¨ ê±°ë¦¬, gama_Temp = í˜„ ê°ì²´ì™€ qì˜ ìµœë‹¨ ê±°ë¦¬
 	
 	//System.out.println("all_Dist = " + all_Dist + ", gama_Temp = " + gama_Temp);
-	//¾Æ·§ÁÙ ÀÌ¿ë °¨¸¶°ª ±¸ÇÔ
-	//System.out.println("ÇöÀç ³ëµå: " + node_Num + "¿¡¼­ q ±îÁöÀÇ °Å¸® :" + gama_Temp + ", ÃÖ´Ü °Å¸® all_Dist = " + all_Dist);	//Â÷·®ÀÇ ÁÖº¯ ³ëµå ¿¡¼­ Äõ¸® ÁöÁ¡±îÁöÀÇ ÃÖ´Ü°Å¸®
-	//-> Â÷·®ÀÇ ÁÖº¯ ³ëµå ±¸ÇÏ¸é¼­ µ¿½Ã¿¡ À§ÁÙ ÄÚµå »ç¿ëÇØ¼­ °Å¸®°¡ ´õ ¸Õ°ÍÀº Á¦¿Ü ¾Æ´Ñ°ÍÀº °¨¸¶°ª Æ÷ÇÔ
+	//ì•„ë«ì¤„ ì´ìš© ê°ë§ˆê°’ êµ¬í•¨
+	//System.out.println("í˜„ì¬ ë…¸ë“œ: " + node_Num + "ì—ì„œ q ê¹Œì§€ì˜ ê±°ë¦¬ :" + gama_Temp + ", ìµœë‹¨ ê±°ë¦¬ all_Dist = " + all_Dist);	//ì°¨ëŸ‰ì˜ ì£¼ë³€ ë…¸ë“œ ì—ì„œ ì¿¼ë¦¬ ì§€ì ê¹Œì§€ì˜ ìµœë‹¨ê±°ë¦¬
+	//-> ì°¨ëŸ‰ì˜ ì£¼ë³€ ë…¸ë“œ êµ¬í•˜ë©´ì„œ ë™ì‹œì— ìœ„ì¤„ ì½”ë“œ ì‚¬ìš©í•´ì„œ ê±°ë¦¬ê°€ ë” ë¨¼ê²ƒì€ ì œì™¸ ì•„ë‹Œê²ƒì€ ê°ë§ˆê°’ í¬í•¨
 	
 	double v_Xtemp = 0;
 	double v_Ytemp = 0;
@@ -1031,69 +1357,138 @@ public double Ad(int node_Num, int except_Node, double distance ,int car_num, in
 	v_Xtemp = Math.pow(v_Xtemp, 2);
 	v_Ytemp = Math.pow(v_Ytemp, 2);
 	v_Distance_Part = Math.sqrt(v_Xtemp + v_Ytemp);
-	v_d_Temp = distance - v_Distance_Part;	//³²Àº±æÀÌ - ÆÄÆ®±æÀÌ
+	v_d_Temp = distance - v_Distance_Part;	//ë‚¨ì€ê¸¸ì´ - íŒŒíŠ¸ê¸¸ì´
 
-	//²ÀÁşÁ¡ °¨¸¶°ª ´õÇÏ±â
-	if(v_d_Temp <= 0){ //³²Àº °Å¸®°¡ <= 0 ÀÏ¶§ ´ÙÀ½ ³ëµå·Î ³Ñ¾î°¡´Â ½ÃÁ¡ÀÌ´Ù. µû¶ó¼­ ÃÖ»óÀ§ ²ÀÁşÁ¡ÀÌ µÈ´Ù.
-		//System.out.println("²ÀÁşÁ¡ ³ëµå : " + node_Num);
-		//ÀÌ°÷ ³ëµå(node_Num)¿Í ´ë»ó Ã­·® °ªÀÇ Á÷¼± °Å¸®¿Í º»Ã¼ÀÇ Á÷¼±°Å¸®¸¦ ºñ±³ÇØ¼­ º»Ã¼ÀÇ Á÷¼±°Å¸®°¡ ´õ ±æ´Ù¸é
-		//ÀÌ°÷ ³ëµå(node_Num)¿Í ´ë»ó Ã­·® °ªÀÇ Á÷¼± °Å¸® + (ÀÌ°÷ ³ëµå¿Í º»Ã¼³ëµå »çÀÌÀÇ °Å¸® - º»Ã¼.°¡ÁßÄ¡) °¡ º»Ã¼ÀÇ Á÷¼±°Å¸® + º»Ã¼.°¡ÁßÄ¡ º¸´Ù Å©´Ù¸é Å«°Å¿¡¼­ ÀÛÀº°Å –A °ªÀ» °¨¸¶°ª¿¡ ´õÇÔ
-		graph.dijkstra(car_num);
-		double dgTemp = graph.printQ3(node_Num);
-		if(dgTemp > gama_Temp){
-			if(dgTemp + (dgTemp-gama_Temp-carArray.get(car_array_num).get_Car_Dist()) > gama_Temp + carArray.get(car_array_num).get_Car_Dist()){
-				gama_Value += (dgTemp + (dgTemp-gama_Temp-carArray.get(car_array_num).get_Car_Dist())) - gama_Temp + carArray.get(car_array_num).get_Car_Dist();
-			}
-		}
+	
+	//ê°ë§ˆ ë¹„êµê°’ ì„ ì´ê³³ì—ì„œ ì¶”ê°€í•´ì•¼í•œë‹¤.
+	//(1)ê¼­ì§€ì ì´ ë˜ëŠ” ê° ë…¸ë“œì˜ ë²ˆí˜¸ë¥¼ êµ¬í•œë‹¤.  ë°©ë²• = ë‚¨ì€ ê±°ë¦¬ê°€ 0ì´í•˜ ì´ë©´ 
+	//System.out.println("í˜„ì¬ ë…¸ë“œ = " + node_Num + ", ì´ì „ ë…¸ë“œ = " + except_Node + " :ì‚¬ì´ì˜ ê±°ë¦¬ : " + distance);
+//	if(v_d_Temp <= 0){
+//		//System.out.println("ê¼­ì§€ì  ë…¸ë“œ : " + node_Num);
+//		vertexG.add(node_Num);
+//		second_vertexG.add(except_Node);
+//	}
 		
+	////////////////////////////////////////////////
+		
+	//ê¼­ì§“ì  ê°ë§ˆê°’ ë”í•˜ê¸°
+//	if(v_d_Temp <= 0){ //ë‚¨ì€ ê±°ë¦¬ê°€ <= 0 ì¼ë•Œ ë‹¤ìŒ ë…¸ë“œë¡œ ë„˜ì–´ê°€ëŠ” ì‹œì ì´ë‹¤. ë”°ë¼ì„œ ìµœìƒìœ„ ê¼­ì§“ì ì´ ëœë‹¤.
+//		//System.out.println("ê¼­ì§“ì  ë…¸ë“œ : " + node_Num);
+//		//ì´ê³³ ë…¸ë“œ(node_Num)ì™€ ëŒ€ìƒ ì± ëŸ‰ ê°’ì˜ ì§ì„  ê±°ë¦¬ì™€ ë³¸ì²´ì˜ ì§ì„ ê±°ë¦¬ë¥¼ ë¹„êµí•´ì„œ ë³¸ì²´ì˜ ì§ì„ ê±°ë¦¬ê°€ ë” ê¸¸ë‹¤ë©´
+//		//ì´ê³³ ë…¸ë“œ(node_Num)ì™€ ëŒ€ìƒ ì± ëŸ‰ ê°’ì˜ ì§ì„  ê±°ë¦¬ + (ì´ê³³ ë…¸ë“œì™€ ë³¸ì²´ë…¸ë“œ ì‚¬ì´ì˜ ê±°ë¦¬ - ë³¸ì²´.ê°€ì¤‘ì¹˜) ê°€ ë³¸ì²´ì˜ ì§ì„ ê±°ë¦¬ + ë³¸ì²´.ê°€ì¤‘ì¹˜ ë³´ë‹¤ í¬ë‹¤ë©´ í°ê±°ì—ì„œ ì‘ì€ê±° ëº¸ ê°’ì„ ê°ë§ˆê°’ì— ë”í•¨
+////		graph.dijkstra(car_num);
+////		double dgTemp = graph.printQ3(node_Num);
+//		
+//
+//		
+//	}
+	
+	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	
+	graph.dijkstra(node_Num);
+	double gamaTemp = graph.printQ3(QUERYPOINT);
+	//System.out.println("node_Num : " + node_Num  + " ê¸°ì¤€ë…¸ë“œ : " + QUERYPOINT + "gamaTemp = " + gamaTemp + ", all_Dist = " + all_Dist);
+	//System.out.println("gamaTemp = " +  gamaTemp);
+	graph.dijkstra(except_Node);
+	double gamaTemp_2 = graph.printQ3(QUERYPOINT);
+	
+	
+	//ê°ë§ˆê°’ êµ¬í•˜ê¸° ì „ì— í° ê°’ ì‘ì€ ê°’ì„ êµ¬ë³„í•œë‹¤.
+	double big = 0, small = 0;
+	if(gamaTemp < gamaTemp_2){
+		big  = gamaTemp_2;
+		small = gamaTemp;
+	}else{
+		big  = gamaTemp;
+		small = gamaTemp_2;
 	}
 	
-	
-	
-	
-	
 	if(v_d_Temp > 0){
-		v_All_Car_Distance += v_Distance_Part;
-		//System.out.println("all_Dist = " + all_Dist + ", gama_Temp : " + gama_Temp + ", car_Num : " + car_Num);
-		//°¨¸¶°ª
 		
-		if(all_Dist >= gama_Temp){
+		v_All_Car_Distance += v_Distance_Part;	//ìª¼ë§ˆë‚œê±°ì¼ë•Œ
 		
+		//ê°ë§ˆê°’ êµ¬í•˜ê¸°
+		if(gamaTemp < all_Dist){
+
+			if(small <= all_Dist && big >= all_Dist){
+				gama_Value += v_Distance_Part - (big-all_Dist);
+				System.out.println("1111111111111111");
+			}else if(big <= all_Dist){
+				gama_Value += v_Distance_Part;
+				System.out.println("2222222222222222");
+			}
+		}else{
 			
-		
-			if(gama_Value_B){
-				//gama_Value += v_Distance_Part;
+			//í˜„ì¬ë…¸ë“œëŠ” ê¸°ì¤€ê°’ë³´ë‹¤ ë©€ì§€ë§Œ, ì´ì „ ë…¸ë“œëŠ” ê¸°ì¤€ê°’ë³´ë‹¤ ê°€ê¹Œìš¸ë•Œ
+			if(gamaTemp_2 < all_Dist){
+				
+				if(gamaTemp_2 <= all_Dist && ((gamaTemp_2+v_Distance_Part) >= all_Dist)){
+					System.out.println("3333333333333333333");
+					gama_Value += ((v_Distance_Part) - ((gamaTemp_2+v_Distance_Part)-all_Dist));
+				}else if((gamaTemp_2+v_Distance_Part) < all_Dist){
+					System.out.println("4444444444444444444");
+					gama_Value += v_Distance_Part;
+				}
 			}
 			
 		}
-
 		
 	}else{
 		v_All_Car_Distance += distance;
+		//System.out.println("node_Num = " + node_Num + ", except_Node = " + except_Node + " = " + v_Distance_Part);
 		
-			if(all_Dist >= gama_Temp){
-						
-						
-				if(gama_Value_B){
-					//gama_Value += distance;
+		//ê°ë§ˆê°’ êµ¬í•˜ê¸°
+		if(gamaTemp < all_Dist){
+
+			if(small <= all_Dist && big >= all_Dist){
+				gama_Value += distance - (big-all_Dist);
+				//System.out.println("distance = " + distance + ", big = " + big + ", all_Dist = " + all_Dist);
+				//System.out.println("distance - (big-all_Dist) = " + (distance - (big-all_Dist)));
+				//System.out.println("2+");
+				System.out.println("4444444444444444444444");
+			}else if(big <= all_Dist){
+				gama_Value += distance;
+				System.out.println("55555555555555555555555");
+				//System.out.println("distance = " + distance);
+				//System.out.println("2++");
+			}
+			
+			//System.out.println("2, except_Node = " + except_Node + ", node_Num = " + node_Num);
+			
+			
+		}else{
+			
+			
+			//í˜„ì¬ë…¸ë“œëŠ” ê¸°ì¤€ê°’ë³´ë‹¤ ë©€ì§€ë§Œ, ì´ì „ ë…¸ë“œëŠ” ê¸°ì¤€ê°’ë³´ë‹¤ ê°€ê¹Œìš¸ë•Œ
+			if(gamaTemp_2 < all_Dist){
+				
+				if(gamaTemp_2 <= all_Dist && ((gamaTemp_2+distance) >= all_Dist)){
+					gama_Value += ((distance) - ((gamaTemp_2+distance)-all_Dist));
+					System.out.println("66666666666666666666666");
+				}else if((gamaTemp_2+distance) < all_Dist){
+					gama_Value += distance;
+					System.out.println("7777777777777777777777");
 				}
+				
+			}
+			
+			//System.out.println("3, except_Node = " + except_Node + ", node_Num = " + node_Num);
 			
 		}
+	
 	}
 	
-	//°¨¸¶°ª ±¸ÇÏ±â ÇØ¾ß ÇÏ´Â¤§ ¤Ä½Ã¹ß ¾È±¸ÇØÁö³× ¢Z°°³× ·çÇÁ È®ÀÎ ÇØº¸±â(AD ·çÇÁ)
 	
 	
+	//System.out.println(except_Node + "ì˜ ì£¼ìœ„ë…¸ë“œ = " + node_Num );
 	
-	//System.out.println(except_Node + "ÀÇ ÁÖÀ§³ëµå = " + node_Num );
-	
-	temp_Array_Neighbor_Node = graph.getLinkNode(node_Num);  //ÁÖÀ§ ³ëµå¸¦ ¾Ë¾Æ¿Â´Ù.
+	temp_Array_Neighbor_Node = graph.getLinkNode(node_Num);  //ì£¼ìœ„ ë…¸ë“œë¥¼ ì•Œì•„ì˜¨ë‹¤.
 	
 	boolean Tb = false;
 	
 	/**
-	 * Â÷·® °´Ã¼ ³ëµåÀÇ ÁÖº¯ ³ëµåµéÀÇ ÃÑ ±æÀÌ¸¦ ±¸ÇÏ±â À§ÇØ¼­ ¸ğµç ³ëµå¸¦ ¹æ¹®ÇØ¾ß ÇÑ´Ù ±×·¯³ª »çÀÌÅ¬ÀÌ Á¸ÀçÇÏ¸é Áßº¹µÈ ³ëµåµéÀ» ÀüºÎ °è»êÇÑ´Ù.
-	 * ÀÌ¶§ tempG_node_Num, tempG_except_Node ¸¦ »ç¿ëÇØ¼­ Áßº¹µÇ´Â ³ëµå´Â °Ç³Ê¶è´Ù.
+	 * ì°¨ëŸ‰ ê°ì²´ ë…¸ë“œì˜ ì£¼ë³€ ë…¸ë“œë“¤ì˜ ì´ ê¸¸ì´ë¥¼ êµ¬í•˜ê¸° ìœ„í•´ì„œ ëª¨ë“  ë…¸ë“œë¥¼ ë°©ë¬¸í•´ì•¼ í•œë‹¤ ê·¸ëŸ¬ë‚˜ ì‚¬ì´í´ì´ ì¡´ì¬í•˜ë©´ ì¤‘ë³µëœ ë…¸ë“œë“¤ì„ ì „ë¶€ ê³„ì‚°í•œë‹¤.
+	 * ì´ë•Œ tempG_node_Num, tempG_except_Node ë¥¼ ì‚¬ìš©í•´ì„œ ì¤‘ë³µë˜ëŠ” ë…¸ë“œëŠ” ê±´ë„ˆëˆë‹¤.
 	 */
 	for(int i=0; i<tempG_node_Num.size(); i++){
 		if(tempG_node_Num.get(i) == node_Num){
@@ -1124,7 +1519,7 @@ public double Ad(int node_Num, int except_Node, double distance ,int car_num, in
 			
 		}
 	}
-	//ÀÌÁ¦ °¨¸¶°ªÀ» ±¸ÇØ¾ßÇÔ
+	//ì´ì œ ê°ë§ˆê°’ì„ êµ¬í•´ì•¼í•¨
 	//System.out.println(tempG_node_Num.size());
 	
 	
@@ -1135,21 +1530,21 @@ public double Ad(int node_Num, int except_Node, double distance ,int car_num, in
 	tempG_except_Node.add(except_Node);
 	
 	if(!Tb){
-	for(int i=0; i<temp_Array_Neighbor_Node.size(); i++){ //¼øÈ¯¶§¹®¿¡ ¼Óµµ°¡ ´Ê¾îÁø´Ù.
+	for(int i=0; i<temp_Array_Neighbor_Node.size(); i++){ //ìˆœí™˜ë•Œë¬¸ì— ì†ë„ê°€ ëŠ¦ì–´ì§„ë‹¤.
 		
 		
 		
-		if(except_Node != nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID()){ //Á¦¿ÜÇÒ ³ëµå´Â Á¦¿Ü -> ÀÌ¹Ì °è»êµÈ °Å¸®°¡ Áßº¹ °è»êµÈ´Ù.
+		if(except_Node != nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID()){ //ì œì™¸í•  ë…¸ë“œëŠ” ì œì™¸ -> ì´ë¯¸ ê³„ì‚°ëœ ê±°ë¦¬ê°€ ì¤‘ë³µ ê³„ì‚°ëœë‹¤.
 			
-			if(v_d_Temp > 0){ //±¸ÇÑ ÆÄÆ® ³ëµåÀÇ ¹úÅØ½º ±æÀÌ°¡ ³²Àº ±æÀÌº¸´Ù ´õ ÂªÀ¸¸é Àç±ÍÈ£Ãâ °è¼Ó ÁøÇà
-	
+			if(v_d_Temp > 0){ //êµ¬í•œ íŒŒíŠ¸ ë…¸ë“œì˜ ë²Œí…ìŠ¤ ê¸¸ì´ê°€ ë‚¨ì€ ê¸¸ì´ë³´ë‹¤ ë” ì§§ìœ¼ë©´ ì¬ê·€í˜¸ì¶œ ê³„ì† ì§„í–‰
+				
 				Ad(nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID(), node_Num, v_d_Temp, car_num, car_array_num);
-				//¼øÈ¯ ¹æÁö ÇØ¾ßÇÑ´Ù.
+				//ìˆœí™˜ ë°©ì§€ í•´ì•¼í•œë‹¤.
 				
 			}
 			
 		}else{
-			//System.out.println("Á¦¿ÜÇÒ ³ëµå ¹øÈ£ = " + nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID());
+			//System.out.println("ì œì™¸í•  ë…¸ë“œ ë²ˆí˜¸ = " + nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID());
 		}
 		
 	}
@@ -1159,17 +1554,17 @@ public double Ad(int node_Num, int except_Node, double distance ,int car_num, in
 }
 
 
-//°¨¸¶°ª ±¸ÇÏ±â
-public double Gd(int node_Num, int except_Node, double distance){ //ÁÖÀ§ ³ëµå ¾Ë¾Æ¿À°í °ªÀ» ´õÇØÁØ´Ù. , Á¦¿Ü ÇÒ ³ëµå, ³²Àº °Å¸®, Â÷·® ³Ñ¹ö
+//ê°ë§ˆê°’ êµ¬í•˜ê¸°
+public double Gd(int node_Num, int except_Node, double distance){ //ì£¼ìœ„ ë…¸ë“œ ì•Œì•„ì˜¤ê³  ê°’ì„ ë”í•´ì¤€ë‹¤. , ì œì™¸ í•  ë…¸ë“œ, ë‚¨ì€ ê±°ë¦¬
 	
 	graph.dijkstra(userQ.getNodeID());
 	
-	gama_Temp = graph.printQ3(node_Num); //all_Dist = k¹øÂ° °´Ã¼¿Í qÀÇ ÃÖ´Ü °Å¸®, gama_Temp = Çö °´Ã¼¿Í qÀÇ ÃÖ´Ü °Å¸®
+	gama_Temp = graph.printQ3(node_Num); //all_Dist = kë²ˆì§¸ ê°ì²´ì™€ qì˜ ìµœë‹¨ ê±°ë¦¬, gama_Temp = í˜„ ê°ì²´ì™€ qì˜ ìµœë‹¨ ê±°ë¦¬
 	
 	//System.out.println("all_Dist = " + all_Dist + ", gama_Temp = " + gama_Temp);
-	//¾Æ·§ÁÙ ÀÌ¿ë °¨¸¶°ª ±¸ÇÔ
-	//System.out.println("ÇöÀç ³ëµå: " + node_Num + "¿¡¼­ q ±îÁöÀÇ °Å¸® :" + gama_Temp + ", ÃÖ´Ü °Å¸® all_Dist = " + all_Dist);	//Â÷·®ÀÇ ÁÖº¯ ³ëµå ¿¡¼­ Äõ¸® ÁöÁ¡±îÁöÀÇ ÃÖ´Ü°Å¸®
-	//-> Â÷·®ÀÇ ÁÖº¯ ³ëµå ±¸ÇÏ¸é¼­ µ¿½Ã¿¡ À§ÁÙ ÄÚµå »ç¿ëÇØ¼­ °Å¸®°¡ ´õ ¸Õ°ÍÀº Á¦¿Ü ¾Æ´Ñ°ÍÀº °¨¸¶°ª Æ÷ÇÔ
+	//ì•„ë«ì¤„ ì´ìš© ê°ë§ˆê°’ êµ¬í•¨
+	//System.out.println("í˜„ì¬ ë…¸ë“œ: " + node_Num + "ì—ì„œ q ê¹Œì§€ì˜ ê±°ë¦¬ :" + gama_Temp + ", ìµœë‹¨ ê±°ë¦¬ all_Dist = " + all_Dist);	//ì°¨ëŸ‰ì˜ ì£¼ë³€ ë…¸ë“œ ì—ì„œ ì¿¼ë¦¬ ì§€ì ê¹Œì§€ì˜ ìµœë‹¨ê±°ë¦¬
+	//-> ì°¨ëŸ‰ì˜ ì£¼ë³€ ë…¸ë“œ êµ¬í•˜ë©´ì„œ ë™ì‹œì— ìœ„ì¤„ ì½”ë“œ ì‚¬ìš©í•´ì„œ ê±°ë¦¬ê°€ ë” ë¨¼ê²ƒì€ ì œì™¸ ì•„ë‹Œê²ƒì€ ê°ë§ˆê°’ í¬í•¨
 	
 	double v_Xtemp = 0;
 	double v_Ytemp = 0;
@@ -1184,27 +1579,20 @@ public double Gd(int node_Num, int except_Node, double distance){ //ÁÖÀ§ ³ëµå ¾Ë
 	v_Xtemp = Math.pow(v_Xtemp, 2);
 	v_Ytemp = Math.pow(v_Ytemp, 2);
 	v_Distance_Part = Math.sqrt(v_Xtemp + v_Ytemp);
-	v_d_Temp = distance - v_Distance_Part;	//³²Àº±æÀÌ - ÆÄÆ®±æÀÌ
+	v_d_Temp = distance - v_Distance_Part;	//ë‚¨ì€ê¸¸ì´ - íŒŒíŠ¸ê¸¸ì´
 
-	if(v_d_Temp > 0){
-				gama_Value += v_Distance_Part;
-	}else{	
-				gama_Value += distance;
-	}
+		
+	//System.out.println(except_Node + "ì˜ ì£¼ìœ„ë…¸ë“œ = " + node_Num );
 	
-	//°¨¸¶°ª ±¸ÇÏ±â ÇØ¾ß ÇÏ´Â¤§ ¤Ä½Ã¹ß ¾È±¸ÇØÁö³× ¢Z°°³× ·çÇÁ È®ÀÎ ÇØº¸±â(AD ·çÇÁ)
+	System.out.println("node_Num : " +node_Num);
 	
-	
-	
-	//System.out.println(except_Node + "ÀÇ ÁÖÀ§³ëµå = " + node_Num );
-	
-	temp_Array_Neighbor_Node = graph.getLinkNode(node_Num);  //ÁÖÀ§ ³ëµå¸¦ ¾Ë¾Æ¿Â´Ù.
+	temp_Array_Neighbor_Node = graph.getLinkNode(node_Num);  //ì£¼ìœ„ ë…¸ë“œë¥¼ ì•Œì•„ì˜¨ë‹¤.
 	
 	boolean Tb = false;
 	
 	/**
-	 * Â÷·® °´Ã¼ ³ëµåÀÇ ÁÖº¯ ³ëµåµéÀÇ ÃÑ ±æÀÌ¸¦ ±¸ÇÏ±â À§ÇØ¼­ ¸ğµç ³ëµå¸¦ ¹æ¹®ÇØ¾ß ÇÑ´Ù ±×·¯³ª »çÀÌÅ¬ÀÌ Á¸ÀçÇÏ¸é Áßº¹µÈ ³ëµåµéÀ» ÀüºÎ °è»êÇÑ´Ù.
-	 * ÀÌ¶§ tempG_node_Num, tempG_except_Node ¸¦ »ç¿ëÇØ¼­ Áßº¹µÇ´Â ³ëµå´Â °Ç³Ê¶è´Ù.
+	 * ì°¨ëŸ‰ ê°ì²´ ë…¸ë“œì˜ ì£¼ë³€ ë…¸ë“œë“¤ì˜ ì´ ê¸¸ì´ë¥¼ êµ¬í•˜ê¸° ìœ„í•´ì„œ ëª¨ë“  ë…¸ë“œë¥¼ ë°©ë¬¸í•´ì•¼ í•œë‹¤ ê·¸ëŸ¬ë‚˜ ì‚¬ì´í´ì´ ì¡´ì¬í•˜ë©´ ì¤‘ë³µëœ ë…¸ë“œë“¤ì„ ì „ë¶€ ê³„ì‚°í•œë‹¤.
+	 * ì´ë•Œ tempG_node_Num, tempG_except_Node ë¥¼ ì‚¬ìš©í•´ì„œ ì¤‘ë³µë˜ëŠ” ë…¸ë“œëŠ” ê±´ë„ˆëˆë‹¤.
 	 */
 	for(int i=0; i<tempG_node_Num.size(); i++){
 		if(tempG_node_Num.get(i) == node_Num){
@@ -1235,34 +1623,34 @@ public double Gd(int node_Num, int except_Node, double distance){ //ÁÖÀ§ ³ëµå ¾Ë
 			
 		}
 	}
-	//ÀÌÁ¦ °¨¸¶°ªÀ» ±¸ÇØ¾ßÇÔ
+	//ì´ì œ ê°ë§ˆê°’ì„ êµ¬í•´ì•¼í•¨
 	//System.out.println(tempG_node_Num.size());
 	
 	tempG_node_Num.add(node_Num);
 	tempG_except_Node.add(except_Node);
 	
 	if(!Tb){
-	for(int i=0; i<temp_Array_Neighbor_Node.size(); i++){ //¼øÈ¯¶§¹®¿¡ ¼Óµµ°¡ ´Ê¾îÁø´Ù.
+	for(int i=0; i<temp_Array_Neighbor_Node.size(); i++){ //ìˆœí™˜ë•Œë¬¸ì— ì†ë„ê°€ ëŠ¦ì–´ì§„ë‹¤.
 		
 		
 		
-		if(except_Node != nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID()){ //Á¦¿ÜÇÒ ³ëµå´Â Á¦¿Ü -> ÀÌ¹Ì °è»êµÈ °Å¸®°¡ Áßº¹ °è»êµÈ´Ù.
+		if(except_Node != nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID()){ //ì œì™¸í•  ë…¸ë“œëŠ” ì œì™¸ -> ì´ë¯¸ ê³„ì‚°ëœ ê±°ë¦¬ê°€ ì¤‘ë³µ ê³„ì‚°ëœë‹¤.
 			
-			if(v_d_Temp > 0){ //±¸ÇÑ ÆÄÆ® ³ëµåÀÇ ¹úÅØ½º ±æÀÌ°¡ ³²Àº ±æÀÌº¸´Ù ´õ ÂªÀ¸¸é Àç±ÍÈ£Ãâ °è¼Ó ÁøÇà
+			if(v_d_Temp > 0){ //êµ¬í•œ íŒŒíŠ¸ ë…¸ë“œì˜ ë²Œí…ìŠ¤ ê¸¸ì´ê°€ ë‚¨ì€ ê¸¸ì´ë³´ë‹¤ ë” ì§§ìœ¼ë©´ ì¬ê·€í˜¸ì¶œ ê³„ì† ì§„í–‰
 	
 				Gd(nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID(), node_Num, v_d_Temp);
-				//¼øÈ¯ ¹æÁö ÇØ¾ßÇÑ´Ù.
+				//ìˆœí™˜ ë°©ì§€ í•´ì•¼í•œë‹¤.
 				
 			}
 			
 		}else{
-			//System.out.println("Á¦¿ÜÇÒ ³ëµå ¹øÈ£ = " + nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID());
+			//System.out.println("ì œì™¸í•  ë…¸ë“œ ë²ˆí˜¸ = " + nodeArray.get(temp_Array_Neighbor_Node.get(i)).getNodeID());
 		}
 		
 	}
 	}
 	//temp_Array_Gama_Node_Candidate.add(node_Num);
-	return v_All_Car_Distance;
+	return gama_Value;
 }
 
 
@@ -1272,7 +1660,7 @@ public double Gd(int node_Num, int except_Node, double distance){ //ÁÖÀ§ ³ëµå ¾Ë
 
 
 /**
- * 	¼­¹ö ¹é±×¶ó¿îµå¿¡¼­ ÀÚµ¿Â÷ °´Ã¼¸¦ °¡Á®¿Â´Ù.
+ * 	ì„œë²„ ë°±ê·¸ë¼ìš´ë“œì—ì„œ ìë™ì°¨ ê°ì²´ë¥¼ ê°€ì ¸ì˜¨ë‹¤.
  */
 public void appendCar(Car car) {
 	// TODO Auto-generated method stub
@@ -1282,5 +1670,3 @@ public void appendCar(Car car) {
 
 
 }
-
-

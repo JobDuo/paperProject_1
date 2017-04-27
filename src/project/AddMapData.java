@@ -118,6 +118,8 @@ class AddMapData {
 		car.setNodeID(randCarArray.get(0).getNodeID());
 		car.setPoint_x(randCarArray.get(0).getNormalizedX());
 		car.setPoint_y(randCarArray.get(0).getNormalizedY());
+		
+		car.set_Car_Dist(130);
 		carArray.add(car);
 		
 		randCarArray.add(nodeArray.get(16648));		//차량의 노드 위치
@@ -173,6 +175,19 @@ class AddMapData {
 		car.setPoint_x(randCarArray.get(7).getNormalizedX());
 		car.setPoint_y(randCarArray.get(7).getNormalizedY());
 		carArray.add(car);
+
+
+		randCarArray.add(nodeArray.get(7085));		//차량의 노드 위치
+		car = new Car(8);
+		car.setNodeID(randCarArray.get(8).getNodeID());
+		car.setPoint_x(randCarArray.get(8).getNormalizedX());
+		car.setPoint_y(randCarArray.get(8).getNormalizedY());
+		
+		car.set_Car_Dist(130);
+		
+		carArray.add(car);
+		
+		
 		
 		
 		

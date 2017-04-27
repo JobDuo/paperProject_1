@@ -15,10 +15,18 @@ class Car implements Serializable{
 
 	private double weight = 130;
 	
+	
+	private double ad = 0; //자동차가 갈수 있는 모든 방향의 합
+	private double gama = 0; //자동차의 감마값
+	private double dist_Direct = 0; //자동차의 감마값
+	
 	/**
 	 * 자동차 고유번호
 	 */
 	Car(int carId){
+		this.carId = carId;
+	}
+	public void set_Car_Id(int carId){
 		this.carId = carId;
 	}
 	
@@ -30,11 +38,48 @@ class Car implements Serializable{
 	}
 	
 	/**
+	 * 자동차의 모든거리
+	 */
+	public void set_Ad(double ad){
+		this.ad = ad;
+	}
+	public double get_Ad(){
+		return ad;
+	}
+	
+	/**
+	 * 자동차의 감마값
+	 */
+	public void set_Gama(double gama){
+		this.gama = gama;
+	}
+	public double get_Gama(){
+		return gama;
+	}
+	
+	/**
+	 * 직선거리
+	 */
+	public void set_Dist_Direct(double dist_Direct){
+		this.dist_Direct = dist_Direct;
+	}
+	public double get_Dist_Direct(){
+		return dist_Direct;
+	}
+	
+	
+	
+	
+	/**
 	 * 자동차의 가중치
 	 */
 	public double get_Car_Dist(){
 		return weight;	//차량의 가중치
 	}
+	public void set_Car_Dist(double w){
+		weight = w;	//차량의 가중치
+	}
+	
 	
 	/**
 	 * 차가 위치할 노드의 위치아이디
